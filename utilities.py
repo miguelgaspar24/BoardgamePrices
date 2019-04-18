@@ -2,6 +2,14 @@
 # coding: utf-8
 
 def convert_chars(string):
+    '''
+    Converts problematic characters. Usually, tend to be accented vowels.
+    Takes the following parameters:
+
+    string (str): a string where one or more characters raise a UnicodeEncodeError.
+
+    Returns a modified string.
+    '''
 
     if 'â\x80\x93' in string:
         string = string.replace('â\x80\x93', '-')

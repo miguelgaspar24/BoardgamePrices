@@ -11,6 +11,11 @@ from utilities import convert_chars
 
 
 def get_prices():
+	'''
+	Scrapes www.jogonamesa.pt for boardgame prices. Takes NO parameters.
+
+	Returns a list of boardgame names, and pandas DataFrame containing those games' prices.
+	'''
 
 	SERVICE = 'jogonamesa'
 	USERNAME = 'miguelgaspar24@gmail.com'

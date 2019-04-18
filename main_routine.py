@@ -16,6 +16,15 @@ savepath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), 'data')
 
 
 def set_custom_logger(logger_level, savepath, log_filename):
+	'''
+	Creates a custom logger. Takes the following parameters:
+
+	logger_level (logging.LEVEL): logging level.
+	savepath (str): path to where to save the logger output.
+	log_filename (str): name of the saved logger.
+
+	Returns a logger object with its associated handler and formatter.
+	'''
 
 	logger = logging.getLogger('my_logger')
 	logger.setLevel(logger_level)
@@ -37,6 +46,12 @@ def set_custom_logger(logger_level, savepath, log_filename):
 
 
 def main(custom_logger):
+	'''
+	Collects the scraping results of different spyder scripts and saves their joint output to an
+	Excel file.	Takes the following arguments:
+
+	custom_logger (logger object): a logger object created by the above set_custom_logger function.
+	'''
 
 	game_list, table1 = spyder1.get_prices()
 	table2 = spyder2.get_prices(game_list)

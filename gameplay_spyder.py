@@ -11,6 +11,14 @@ import xlwt
 
 
 def get_prices(list_of_games):
+    '''
+    Scrapes www.gameplay.pt for boardgame prices. Takes the folllowing parameters:
+
+    list_of_games (list): a list containing games of boardgames. This list is iterated over
+                          to find the correspond prices on the website.
+
+    Returns a pandas DataFrame containing the prices of all games present in list_of_games.
+    '''
 
     session = requests.session()
 
