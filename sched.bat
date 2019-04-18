@@ -1,0 +1,1 @@
+cmd /K C:\Users\Miguel\Desktop\web_scraping\Scripts\python.exe "C:\Users\Miguel\Desktop\web_scraping\project\main_routine.py"
