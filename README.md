@@ -6,6 +6,7 @@ The goal of this project is to explore and playing around with different concept
 - Script Scheduling;
 - Logging;
 - Linting;
+- Unittesting;
 - Git Hooks;
 - ... maybe more.
 
