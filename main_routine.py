@@ -59,7 +59,7 @@ def main(custom_logger):
 	full_table = table1.merge(table2, on='name')
 
 	today = dt.datetime.today()
-	custom_logger.info('Todays menu, in separate main functions: ' + today.strftime("%Y-%m-%d %H:%M"))
+	custom_logger.info("Today's menu, in separate main functions: " + today.strftime("%Y-%m-%d %H:%M"))
 
 	year_folder = os.path.join(savepath, today.strftime('%Y') + '_prices')
 	if not os.path.isdir(year_folder):
