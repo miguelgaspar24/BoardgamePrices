@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 import requests
 
-from utilities import convert_chars
+import utilities
 
 
 def get_prices():
 	'''
-	Scrapes www.jogonamesa.pt for boardgame prices. Takes NO parameters.
+	Scrapes www.jogonamesa.pt for board game prices. Takes NO parameters.
 
 	Returns a list of boardgame names, and pandas DataFrame containing those games' prices.
 	'''
@@ -22,18 +22,18 @@ def get_prices():
 	password = keyring.get_password(SERVICE, USERNAME)
 
 	credentials = {
-	               'email': USERNAME,
-	               'password': password,
-	               'BT_LOGIN': 'Entrar'
-	              }
+				   'email': USERNAME,
+				   'password': password,
+				   'BT_LOGIN': 'Entrar'
+				  }
 
 	session = requests.session()
 	login_url = 'http://jogonamesa.pt/P/user_login.cgi'
 	login = session.get(login_url)
 	login = session.post(
-	                     login_url,
-	                     data=credentials,
-	                    )
+						 login_url,
+						 data=credentials,
+						)
 
 	wishlist_url = 'http://jogonamesa.pt/P/user_wishlist.cgi'
 	wishlist = session.get(wishlist_url)
@@ -47,39 +47,42 @@ def get_prices():
 	games = {}
 	for url in wishlist_urls:
 
-	    page = session.get(url)
-	    page_html = page.text
-	    page_soup = BeautifulSoup(page_html, features='html.parser')
+		page = session.get(url)
+		page_html = page.text
+		page_soup = BeautifulSoup(page_html, features='html.parser')
 
-	    name_blocks = page_soup.find_all('div', class_='wishlist_caracteristicas')
-	    price_blocks = page_soup.find_all('div', class_='wishlist_opcoes')
+		name_blocks = page_soup.find_all('div', class_='wishlist_caracteristicas')
+		price_blocks = page_soup.find_all('div', class_='wishlist_opcoes')
 
-	    for i, (name_block, price_block) in enumerate(zip(name_blocks, price_blocks)):
-	        name = name_block.a.string
-	        name = convert_chars(name)
-	        price_tags = price_block.find_all('a', 'botao')
-	        try:
-	            prices = []
-	            if len(price_tags) != 0:
+		for i, (name_block, price_block) in enumerate(zip(name_blocks, price_blocks)):
+			name = name_block.a.string
+			name = utilities.convert_chars(name)
+			price_tags = price_block.find_all('a', 'botao')
+			print(name)
+			print(price_tags)
+			try:
+				prices = []
+				if len(price_tags) != 0:
 
-	                for tag in price_tags:
-	                    price = tag.contents[1].split('€')[1]
-	                    availability = tag.find_next('span').contents[0].contents[0].string
-	                    if 'Sem prev' not in availability:
-	                        prices.append(price)
+					for tag in price_tags:
+						price = tag.contents[1].split('€')[1]
+						availability = tag.find_next('span').contents[0].contents[0].string
+						if 'Sem prev' not in availability:
+							prices.append(price)
 
-	                if len(prices) == 0:
-	                    raise AttributeError
+					if len(prices) == 0:
+						raise AttributeError
 
-	                games[name] = min(prices)
+					games[name] = min(prices)
 
-	            else:
-	                raise AttributeError
+				else:
+					raise AttributeError
 
-	        except AttributeError:
-	            games[name] = np.nan
-
+			except AttributeError:
+				games[name] = np.nan
+	print(games)
 	price_table = pd.DataFrame.from_dict(games, orient='index').reset_index()
+	# print(price_table)
 	price_table.columns = ['name', 'JogoNaMesa']
 	price_table['name'] = price_table['name'].astype('str')
 	price_table['JogoNaMesa'] = price_table['JogoNaMesa'].astype('float')

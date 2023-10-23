@@ -1,1 +1,1 @@
-cmd /K C:\Users\Miguel\Desktop\web_scraping\Scripts\python.exe "C:\Users\Miguel\Desktop\web_scraping\BoardgamePrices\main_routine.py"
+cmd /K C:\Users\Miguel\Desktop\virtual_envs\web_scraping\BoardGame_Prices\Scripts\python.exe "C:\Users\Miguel\Desktop\virtual_envs\web_scraping\Boardgame_Prices\project\main_routine.py"
