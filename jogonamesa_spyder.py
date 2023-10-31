@@ -1,13 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
 
 from bs4 import BeautifulSoup
-import keyring
 import numpy as np
 import pandas as pd
 import requests
 
-import utilities
+from credentials import get_credentials
 
 
 def get_prices():
@@ -17,25 +14,15 @@ def get_prices():
 	Returns a list of boardgame names, and pandas DataFrame containing those games' prices.
 	'''
 
-	SERVICE = 'jogonamesa'
-	USERNAME = 'miguelgaspar24@gmail.com'
-	password = keyring.get_password(SERVICE, USERNAME)
-
-	credentials = {
-				   'email': USERNAME,
-				   'password': password,
-				   'BT_LOGIN': 'Entrar'
-				  }
-
 	session = requests.session()
-	login_url = 'http://jogonamesa.pt/P/user_login.cgi'
-	login = session.get(login_url)
+	login_url = 'https://jogonamesa.pt/P/user_login.cgi'
+	login = session.get(login_url, headers={'User-Agent': 'Mozilla/5.0'})
 	login = session.post(
 						 login_url,
-						 data=credentials,
+						 data=get_credentials()
 						)
 
-	wishlist_url = 'http://jogonamesa.pt/P/user_wishlist.cgi'
+	wishlist_url = 'https://jogonamesa.pt/P/user_wishlist.cgi'
 	wishlist = session.get(wishlist_url)
 	wishlist_html = wishlist.text
 	wishlist_soup = BeautifulSoup(wishlist_html, features='html.parser')
@@ -48,18 +35,15 @@ def get_prices():
 	for url in wishlist_urls:
 
 		page = session.get(url)
-		page_html = page.text
+		page_html = page.content.decode('utf-8','ignore') #The decode() function here circumvents incorrectly decoded utf8 characters (mostly accented vowels)
 		page_soup = BeautifulSoup(page_html, features='html.parser')
-
 		name_blocks = page_soup.find_all('div', class_='wishlist_caracteristicas')
 		price_blocks = page_soup.find_all('div', class_='wishlist_opcoes')
 
 		for i, (name_block, price_block) in enumerate(zip(name_blocks, price_blocks)):
 			name = name_block.a.string
-			name = utilities.convert_chars(name)
-			price_tags = price_block.find_all('a', 'botao')
 			print(name)
-			print(price_tags)
+			price_tags = price_block.find_all('a', 'botao')
 			try:
 				prices = []
 				if len(price_tags) != 0:
@@ -80,9 +64,9 @@ def get_prices():
 
 			except AttributeError:
 				games[name] = np.nan
-	print(games)
+
 	price_table = pd.DataFrame.from_dict(games, orient='index').reset_index()
-	# print(price_table)
+
 	price_table.columns = ['name', 'JogoNaMesa']
 	price_table['name'] = price_table['name'].astype('str')
 	price_table['JogoNaMesa'] = price_table['JogoNaMesa'].astype('float')
