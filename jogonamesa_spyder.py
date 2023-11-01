@@ -42,7 +42,6 @@ def get_prices():
 
 		for i, (name_block, price_block) in enumerate(zip(name_blocks, price_blocks)):
 			name = name_block.a.string
-			print(name)
 			price_tags = price_block.find_all('a', 'botao')
 			try:
 				prices = []

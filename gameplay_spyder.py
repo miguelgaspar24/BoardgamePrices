@@ -1,13 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-import datetime as dt
 
 from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
 import requests
-import xlwt
 
 
 def get_prices(list_of_games):
@@ -28,12 +23,14 @@ def get_prices(list_of_games):
             game_query = game
             if ' ' in game:
                 game_query = game.replace(' ', '+')
+                
             gameplay_url = 'http://www.gameplay.pt/search?search_query=' + game_query
             gameplay_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; W…) Gecko/20100101 Firefox/65.0'.encode('utf-8')}
             gameplay_session = session.get(gameplay_url, headers=gameplay_headers)
             gameplay_text = gameplay_session.text
             gameplay_soup = BeautifulSoup(gameplay_text, features='html.parser')
             search_results = gameplay_soup.find_all('div', class_='right-block')
+
             prices = []
             for result in search_results:
                 name = result.a.string[1:-1]
