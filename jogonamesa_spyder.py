@@ -49,7 +49,7 @@ def get_prices():
 
 					for tag in price_tags:
 						price = tag.contents[1].split('€')[1]
-						availability = tag.find_next('span').contents[0].contents[0].string
+						availability = tag.find_next('span').contents[0].string
 						if 'Sem prev' not in availability:
 							prices.append(price)
 

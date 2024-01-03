@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
 import requests
+from unidecode import unidecode
 
 
 def get_prices(list_of_games):
@@ -24,38 +25,39 @@ def get_prices(list_of_games):
             if ' ' in game:
                 game_query = game.replace(' ', '+')
                 
-            gameplay_url = 'http://www.gameplay.pt/search?search_query=' + game_query
+            gameplay_url = 'http://www.gameplay.pt/en/search?search_query=' + game_query
             gameplay_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; W…) Gecko/20100101 Firefox/65.0'.encode('utf-8')}
             gameplay_session = session.get(gameplay_url, headers=gameplay_headers)
             gameplay_text = gameplay_session.text
             gameplay_soup = BeautifulSoup(gameplay_text, features='html.parser')
-            search_results = gameplay_soup.find_all('div', class_='right-block')
+            
+            search_results = gameplay_soup.find_all('a', class_="thumbnail product-thumbnail")
 
-            prices = []
             for result in search_results:
-                name = result.a.string[1:-1]
-                if ':' in game and ':' not in name:
-                    try:
-                        pre_colon = game.split(':')[0]
-                        post_colon = game.split(':')[1]
-                        pre_bracket = name.split('(')[0]
-                        post_bracket = name.split('(')[1]
-                    except IndexError:
-                        raise ValueError
-                    if pre_colon + post_colon == pre_bracket + post_bracket[:-1]:
-                        price = result.span.string[1:-1].replace(',', '.')
-                        prices.append(price)
+
+                game_url = result.img['data-full-size-image-url']
+
+                curated_game_name = unidecode(game.replace('Ultimate Edition', 'Master Set').lower()).replace('-', '').replace(' ', '-').replace(':', '')
+                curated_game_url = game_url.split('/')[-1].split('.')[0]
+                
+                # Fixes issues with "7 Wonders Duel: Agora" and "Aquatica" urls
+                if 'preorder' in curated_game_url:
+                    curated_game_url = curated_game_url.split('preorder-')[1]
+
+                if curated_game_name == curated_game_url:
+
+                    game_page = session.get(result['href'], headers=gameplay_headers)
+                    game_text = game_page.text
+                    game_soup = BeautifulSoup(game_text, features='html.parser')
+                    price = game_soup.find('div', class_='current-price').span.text[1:]
+                    break
+
                 else:
-                    if name == game:
-                        price = result.span.string[1:-1].replace(',', '.')
-                        prices.append(price)
+                    price = np.nan
 
-            if len(prices) == 0:
-                raise ValueError
+            games[game] = price
 
-            games[game] = min(prices)
-
-        except ValueError:
+        except TypeError:
             games[game] = np.nan
 
     price_table = pd.DataFrame.from_dict(games, orient='index').reset_index()
