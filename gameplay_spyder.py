@@ -5,6 +5,8 @@ import pandas as pd
 import requests
 from unidecode import unidecode
 
+from alive_progress import alive_it
+
 
 def get_prices(list_of_games):
     '''
@@ -19,7 +21,9 @@ def get_prices(list_of_games):
     session = requests.session()
 
     games = {}
-    for i, game in enumerate(list_of_games):
+
+    progress_bar = alive_it(list_of_games, bar='smooth', spinner='classic', title='Spyder 2 - GamePlay:      ')
+    for i, game in enumerate(progress_bar):
         try:
             game_query = game
             if ' ' in game:

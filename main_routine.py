@@ -3,11 +3,13 @@ import datetime as dt
 import logging
 import os
 import sys
+from time import sleep
 
 import pandas as pd
 
 import jogonamesa_spyder as spyder1
 import gameplay_spyder as spyder2
+import jogartabuleiro_spyder as spyder3
 
 
 def set_custom_logger(logger_level, savepath, log_filename):
@@ -51,8 +53,10 @@ def main(custom_logger, savepath):
 
 	game_list, table1 = spyder1.get_prices()
 	table2 = spyder2.get_prices(game_list)
+	table3 = spyder3.get_prices(game_list)
 
-	full_table = table1.merge(table2, on='name')
+	temp_merge1 = table1.merge(table2, on='name', how='left')
+	full_table = temp_merge1.merge(table3, on='name', how='left')
 
 	today = dt.datetime.today()
 	custom_logger.info("Today's menu, in separate main functions: " + today.strftime("%Y-%m-%d %H:%M"))
@@ -67,7 +71,6 @@ def main(custom_logger, savepath):
 
 	filename = os.path.join(savepath, os.path.basename(year_folder), today.strftime('%B') + '.xlsx')
 	if not os.path.isfile(filename):
-		print('This one')
 		full_table.to_excel(
 							filename,
 							index=False,
@@ -75,7 +78,6 @@ def main(custom_logger, savepath):
 							na_rep='NaN',
 							)
 	else:
-		print('That')
 		with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
 			full_table.to_excel(
 								writer,
