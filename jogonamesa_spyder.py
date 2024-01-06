@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import requests
 
+from alive_progress import alive_it
+
 from credentials import get_credentials
 
 
@@ -32,7 +34,9 @@ def get_prices():
 	wishlist_urls = [wishlist_url + '?accao=8&num={}'.format(str(page_number)) for page_number in range(1, n_pages + 1)]
 
 	games = {}
-	for url in wishlist_urls:
+
+	progress_bar = alive_it(wishlist_urls, bar='smooth', spinner='classic', title='Spyder 1 - JogoNaMesa:    ')
+	for url in progress_bar:
 
 		page = session.get(url)
 		page_html = page.content.decode('utf-8','ignore') #The decode() function here circumvents incorrectly decoded utf8 characters (mostly accented vowels)
