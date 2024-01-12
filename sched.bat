@@ -1,1 +1,1 @@
-cmd /K C:\Users\Miguel\Desktop\virtual_envs\web_scraping\BoardGame_Prices\Scripts\python.exe "C:\Users\Miguel\Desktop\virtual_envs\web_scraping\Boardgame_Prices\project\main_routine.py"
+C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\Scripts\activate.bat && python C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\main_routine.py
