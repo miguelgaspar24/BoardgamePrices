@@ -1,169 +1,162 @@
-import pandas as pd
-from dash import Dash, Input, Output, dcc, html
 
-data = (
-    pd.read_csv(r".\data\2024_prices\avocado.csv")
-    .assign(Date=lambda data: pd.to_datetime(data["Date"], format="%Y-%m-%d"))
-    .sort_values(by="Date")
-)
-regions = data["region"].sort_values().unique()
-avocado_types = data["type"].sort_values().unique()
+import os
+import pandas as pd
+
+from dash import Dash, Input, Output, dcc, html
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+
+
+root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
+
+master_df = pd.DataFrame()
+for year in os.listdir(root_path):
+    for month in os.listdir(root_path + '\\' + year):
+        xl = pd.ExcelFile(os.path.join(root_path, year, month))
+        dates = xl.sheet_names
+        for day in dates:
+            file = xl.parse(day)
+            file['date'] = pd.to_datetime(day, format='%Y-%m-%d')
+            master_df = pd.concat([master_df, file])
+
+column_order = ['date', 'name', 'JogoNaMesa', 'Gameplay', 'JogarTabuleiro']
+master_df = master_df[column_order].sort_values(by='date')
+
+games = master_df['name'].sort_values().unique()
+colors = {'JogoNaMesa': 'red', 'Gameplay': 'blue', 'JogarTabuleiro': 'green'}
+stores = list(colors.keys())
 
 external_stylesheets = [
     {
-        "href": (
-            "https://fonts.googleapis.com/css2?"
-            "family=Lato:wght@400;700&display=swap"
+        'href': (
+            'https://fonts.googleapis.com/css2?'
+            'family=Lato:wght@400;700&display=swap'
         ),
-        "rel": "stylesheet",
+        'rel': 'stylesheet',
     },
 ]
+
 app = Dash(__name__, external_stylesheets=external_stylesheets)
-app.title = "Avocado Analytics: Understand Your Avocados!"
+app.title = 'The Price is Right'
 
 app.layout = html.Div(
     children=[
         html.Div(
             children=[
-                html.P(children="🥑", className="header-emoji"),
+                html.P(children='🃏♟️🎲🧩', className='header-emoji'),
                 html.H1(
-                    children="Avocado Analytics", className="header-title"
+                    children='The Price is Right: Board Game Edition', className='header-title'
                 ),
                 html.P(
                     children=(
-                        "Analyze the behavior of avocado prices and the number"
-                        " of avocados sold in the US between 2015 and 2018"
+                        'Track the prices of board games across online vendors to find the best deals at any given time'
                     ),
-                    className="header-description",
+                    className='header-description',
                 ),
             ],
-            className="header",
+            className='header',
         ),
         html.Div(
             children=[
                 html.Div(
                     children=[
-                        html.Div(children="Region", className="menu-title"),
+                        html.Div(children='Game', className='menu-title'),
                         dcc.Dropdown(
-                            id="region-filter",
+                            id='game-filter',
                             options=[
-                                {"label": region, "value": region}
-                                for region in regions
+                                {'label': game, 'value': game}
+                                for game in games
                             ],
-                            value="Albany",
+                            value="10 Minute Heist: The Wizard's Tower",
                             clearable=False,
-                            className="dropdown",
+                            searchable=True,
+                            className='dropdown',
                         ),
                     ]
                 ),
                 html.Div(
                     children=[
-                        html.Div(children="Type", className="menu-title"),
-                        dcc.Dropdown(
-                            id="type-filter",
+                        html.Div(children='Store', className='menu-title'),
+                        dcc.Checklist(
+                            id='store-filter',
                             options=[
-                                {
-                                    "label": avocado_type.title(),
-                                    "value": avocado_type,
-                                }
-                                for avocado_type in avocado_types
+                                {'label': store, 'value': store}
+                                for store in stores
                             ],
-                            value="organic",
-                            clearable=False,
-                            searchable=False,
-                            className="dropdown",
+                            value=stores,
+                            className='checklist',
                         ),
-                    ],
+                    ]
                 ),
                 html.Div(
                     children=[
                         html.Div(
-                            children="Date Range", className="menu-title"
+                            children='Date Range', className='menu-title'
                         ),
                         dcc.DatePickerRange(
-                            id="date-range",
-                            min_date_allowed=data["Date"].min().date(),
-                            max_date_allowed=data["Date"].max().date(),
-                            start_date=data["Date"].min().date(),
-                            end_date=data["Date"].max().date(),
+                            id='date-range',
+                            min_date_allowed=master_df['date'].min().date(),
+                            max_date_allowed=master_df['date'].max().date(),
+                            start_date=master_df['date'].min().date(),
+                            end_date=master_df['date'].max().date(),
                         ),
                     ]
                 ),
             ],
-            className="menu",
+            className='menu',
         ),
         html.Div(
             children=[
                 html.Div(
                     children=dcc.Graph(
-                        id="price-chart",
-                        config={"displayModeBar": False},
+                        id='price-chart',
+                        config={'displayModeBar': False},
                     ),
-                    className="card",
-                ),
-                html.Div(
-                    children=dcc.Graph(
-                        id="volume-chart",
-                        config={"displayModeBar": False},
-                    ),
-                    className="card",
+                    className='card',
                 ),
             ],
-            className="wrapper",
+            className='wrapper',
         ),
     ]
 )
 
 @app.callback(
-    Output("price-chart", "figure"),
-    Output("volume-chart", "figure"),
-    Input("region-filter", "value"),
-    Input("type-filter", "value"),
-    Input("date-range", "start_date"),
-    Input("date-range", "end_date"),
+    Output(component_id='price-chart', component_property='figure'),
+    Input(component_id='game-filter', component_property='value'),
+    Input(component_id='store-filter', component_property='value'),
+    Input(component_id='date-range', component_property='start_date'),
+    Input(component_id='date-range', component_property='end_date'),
 )
-def update_charts(region, avocado_type, start_date, end_date):
-    filtered_data = data.query(
-        "region == @region and type == @avocado_type"
-        " and Date >= @start_date and Date <= @end_date"
+def update_charts(game, stores, start_date, end_date):
+    filtered_data = master_df.query(
+        'name == @game'
+        ' and date >= @start_date and date <= @end_date'
     )
-    price_chart_figure = {
-        "data": [
-            {
-                "x": filtered_data["Date"],
-                "y": filtered_data["AveragePrice"],
-                "type": "lines",
-                "hovertemplate": "$%{y:.2f}<extra></extra>",
-            },
-        ],
-        "layout": {
-            "title": {
-                "text": "Average Price of Avocados",
-                "x": 0.05,
-                "xanchor": "left",
-            },
-            "xaxis": {"fixedrange": True},
-            "yaxis": {"tickprefix": "$", "fixedrange": True},
-            "colorway": ["#17B897"],
-        },
-    }
 
-    volume_chart_figure = {
-        "data": [
-            {
-                "x": filtered_data["Date"],
-                "y": filtered_data["Total Volume"],
-                "type": "lines",
-            },
-        ],
-        "layout": {
-            "title": {"text": "Avocados Sold", "x": 0.05, "xanchor": "left"},
-            "xaxis": {"fixedrange": True},
-            "yaxis": {"fixedrange": True},
-            "colorway": ["#E12D39"],
-        },
-    }
-    return price_chart_figure, volume_chart_figure
+    fig = make_subplots(rows=1,
+                        cols=1,
+                        shared_xaxes=True,
+                        vertical_spacing=0.009,
+                        horizontal_spacing=0.009,
+                        )
+    
+    fig['layout']['margin'] = {'l': 30, 'r': 10, 'b': 50, 't': 25}
+    fig['layout']['yaxis'] = {'ticksuffix': '€', 'tickformat': '.2f'}#, 'rangemode': 'tozero'}
 
-if __name__ == "__main__":
+    for store in stores:
+        fig.append_trace({'x': filtered_data['date'],
+                          'y': filtered_data[store],
+                          'type': 'scatter',
+                          'name': store,
+                          'line': {'color': colors[store]},
+                          'hovertemplate': '%{y:.2f}€'#<extra></extra>'
+                          },
+                        1,
+                        1,
+                        )
+
+    return fig
+
+
+if __name__ == '__main__':
     app.run_server(debug=True)
