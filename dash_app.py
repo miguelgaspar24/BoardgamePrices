@@ -99,6 +99,7 @@ app.layout = html.Div(
                             max_date_allowed=master_df['date'].max().date(),
                             start_date=master_df['date'].min().date(),
                             end_date=master_df['date'].max().date(),
+                            display_format ='DD/MM/YYYY'
                         ),
                     ]
                 ),
@@ -125,7 +126,7 @@ app.layout = html.Div(
     Input(component_id='game-filter', component_property='value'),
     Input(component_id='store-filter', component_property='value'),
     Input(component_id='date-range', component_property='start_date'),
-    Input(component_id='date-range', component_property='end_date'),
+    Input(component_id='date-range', component_property='end_date')
 )
 def update_charts(game, stores, start_date, end_date):
     filtered_data = master_df.query(
@@ -160,6 +161,18 @@ def update_charts(game, stores, start_date, end_date):
                         )
 
     return fig
+
+@app.callback(
+    Output(component_id='date-range', component_property='max_date_allowed'),
+    Output(component_id='date-range', component_property='end_date'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_date_picker_range(game):
+
+    max_date_allowed = master_df['date'].max().date()
+    end_date = master_df['date'].max().date()
+    print(master_df['date'].max().date())
+    return (max_date_allowed, end_date)
 
 
 if __name__ == '__main__':
