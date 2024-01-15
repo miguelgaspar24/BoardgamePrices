@@ -67,7 +67,7 @@ app.layout = html.Div(
                                 {'label': game, 'value': game}
                                 for game in games
                             ],
-                            value="10 Minute Heist: The Wizard's Tower",
+                            value='Last Will',
                             clearable=False,
                             searchable=True,
                             className='dropdown',
@@ -137,12 +137,16 @@ def update_charts(game, stores, start_date, end_date):
                         cols=1,
                         shared_xaxes=True,
                         vertical_spacing=0.009,
-                        horizontal_spacing=0.009,
+                        horizontal_spacing=0.009
                         )
     
-    fig['layout']['margin'] = {'l': 30, 'r': 10, 'b': 50, 't': 25}
-    fig['layout']['yaxis'] = {'ticksuffix': '€', 'tickformat': '.2f'}#, 'rangemode': 'tozero'}
-
+    fig.update_layout(margin={'l': 30, 'r': 10, 'b': 50, 't': 30},
+                      yaxis={'title': 'Price', 'titlefont': {'size': 18}, 'ticksuffix': '€', 'tickformat': '.2f'},
+                      xaxis={'title': 'Date', 'titlefont': {'size': 18}},
+                      legend={'title': 'Store', 'font': {'size': 14}},
+                      title={'text': 'Price over Time', 'font': {'size': 24}, 'yref': 'paper', 'automargin': True, 'y': 0.9, 'x': 0.5, 'xanchor': 'center'}
+                      )
+    
     for store in stores:
         fig.append_trace({'x': filtered_data['date'],
                           'y': filtered_data[store],
