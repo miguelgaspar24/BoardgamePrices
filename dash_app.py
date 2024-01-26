@@ -22,14 +22,11 @@ for year in os.listdir(root_path):
 
 column_order = ['date', 'name', 'JogoNaMesa', 'Gameplay', 'JogarTabuleiro']
 master_df = master_df[column_order].sort_values(by='date')
-
 games = master_df['name'].sort_values().unique()
-colors = {'JogoNaMesa': 'red', 'Gameplay': 'blue', 'JogarTabuleiro': 'green'}
-stores = list(colors.keys())
-sites = {'JogoNaMesa': 'https://jogonamesa.pt/P/home.cgi',
-         'Gameplay': 'https://gameplay.pt/pt/',
-         'JogarTabuleiro': 'https://jogartabuleiro.pt/'
-         }
+stores_prop = {'JogoNaMesa':      {'color': 'red',    'url': 'https://jogonamesa.pt/P/home.cgi'},
+               'Gameplay':        {'color': 'blue',   'url': 'https://gameplay.pt/pt/'},
+               'JogarTabuleiro':  {'color': 'green',  'url': 'https://jogartabuleiro.pt/'}
+               }
 
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 
@@ -72,9 +69,9 @@ app.layout = html.Div(
                             id='store-filter',
                             options=[
                                 {'label': store, 'value': store}
-                                for store in stores
+                                for store in list(stores_prop.keys())
                             ],
-                            value=stores,
+                            value=list(stores_prop.keys()),
                             className='checklist',
                         ),
                     ]
@@ -168,7 +165,7 @@ def update_charts(game, stores, start_date, end_date):
                           'y': filtered_data[store],
                           'type': 'scatter',
                           'name': store,
-                          'line': {'color': colors[store]},
+                          'line': {'color': stores_prop[store]['color']},
                           'hovertemplate': '%{y:.2f}€'#<extra></extra>'
                           },
                         1,
@@ -201,22 +198,22 @@ def update_date_picker_range(game):
 
     filtered_data = master_df.query('name == @game')
 
-    min_values = [filtered_data[store].min() for store in stores]
+    min_values = [filtered_data[store].min() for store in list(stores_prop.keys())]
     min_idx = min_values.index(min(min_values))
-    min_store = stores[min_idx]
-    min_site = sites[min_store]
+    min_store = list(stores_prop.keys())[min_idx]
+    min_site = stores_prop[min_store]['url']
 
-    max_values = [filtered_data[store].max() for store in stores]
+    max_values = [filtered_data[store].max() for store in list(stores_prop.keys())]
     max_idx = max_values.index(max(max_values))
-    max_store = stores[max_idx]
-    max_site = sites[max_store]
+    max_store = list(stores_prop.keys())[max_idx]
+    max_site = stores_prop[max_store]['url']
 
     low_card = dbc.Col(dbc.Card(
                             dbc.CardBody(
                                 [
                                     html.H5('Lowest Price', className='bi bi-caret-down-fill text-success'),
                                     html.H3(str(min(min_values))),
-                                    dbc.Button('@ ' + min_store, color='success', outline=True, href=min_site),
+                                    dbc.Button('@ ' + min_store, color='dark', outline=False, href=min_site),
                                 ]
                             )
                         ), width='auto', id='card-low', className='text-center')
@@ -226,7 +223,7 @@ def update_date_picker_range(game):
                                 [
                                     html.H5('Highest Price', className='bi bi-caret-up-fill text-danger'),
                                     html.H3(str(max(max_values))),
-                                    dbc.Button('@ ' + max_store, color='danger', outline=True, href=max_site),
+                                    dbc.Button('@ ' + max_store, color='dark', outline=False, href=max_site),
                                 ]
                             )
                         ), width='auto', id='card-high', className='text-center')
