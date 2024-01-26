@@ -1,9 +1,10 @@
 
+import math
 import os
-import pandas as pd
 
 from dash import Dash, Input, Output, dcc, html
 import dash_bootstrap_components as dbc
+import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
@@ -23,9 +24,15 @@ for year in os.listdir(root_path):
 column_order = ['date', 'name', 'JogoNaMesa', 'Gameplay', 'JogarTabuleiro']
 master_df = master_df[column_order].sort_values(by='date')
 games = master_df['name'].sort_values().unique()
-stores_prop = {'JogoNaMesa':      {'color': 'red',    'url': 'https://jogonamesa.pt/P/home.cgi'},
-               'Gameplay':        {'color': 'blue',   'url': 'https://gameplay.pt/pt/'},
-               'JogarTabuleiro':  {'color': 'green',  'url': 'https://jogartabuleiro.pt/'}
+stores_prop = {'JogoNaMesa': {'color': 'red',
+                              'url': 'https://jogonamesa.pt/P/home.cgi',
+                              'favicon': 'https://jogonamesa.pt/img/favicon.ico'},
+               'Gameplay': {'color': 'blue',
+                            'url': 'https://gameplay.pt/pt/',
+                            'favicon': 'http://www.gameplay.pt/img/favicon.ico?1678899580'},
+               'JogarTabuleiro': {'color': 'green',
+                                  'url': 'https://jogartabuleiro.pt/',
+                                  'favicon': 'https://jogartabuleiro.pt/wp-content/uploads/2018/06/logo_favicon_M9H_icon.ico'}
                }
 
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
@@ -202,18 +209,21 @@ def update_date_picker_range(game):
     min_idx = min_values.index(min(min_values))
     min_store = list(stores_prop.keys())[min_idx]
     min_site = stores_prop[min_store]['url']
+    min_card_value = 'No Data Available' if math.isnan(min(min_values)) else '{:.2f}'.format(min(min_values)) + '€'
 
     max_values = [filtered_data[store].max() for store in list(stores_prop.keys())]
     max_idx = max_values.index(max(max_values))
     max_store = list(stores_prop.keys())[max_idx]
     max_site = stores_prop[max_store]['url']
+    max_card_value = 'No Data Available' if math.isnan(max(max_values)) else '{:.2f}'.format(max(max_values)) + '€'
 
     low_card = dbc.Col(dbc.Card(
                             dbc.CardBody(
                                 [
                                     html.H5('Lowest Price', className='bi bi-caret-down-fill text-success'),
-                                    html.H3(str(min(min_values))),
-                                    dbc.Button('@ ' + min_store, color='dark', outline=False, href=min_site),
+                                    html.H3(min_card_value),
+                                    dbc.Button(color='dark', outline=False, href=min_site,
+                                               children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store])
                                 ]
                             )
                         ), width='auto', id='card-low', className='text-center')
@@ -222,8 +232,9 @@ def update_date_picker_range(game):
                             dbc.CardBody(
                                 [
                                     html.H5('Highest Price', className='bi bi-caret-up-fill text-danger'),
-                                    html.H3(str(max(max_values))),
-                                    dbc.Button('@ ' + max_store, color='dark', outline=False, href=max_site),
+                                    html.H3(max_card_value),
+                                    dbc.Button(color='dark', outline=False, href=max_site,
+                                               children=[html.Img(src=stores_prop[max_store]['favicon']), ' ' + max_store])
                                 ]
                             )
                         ), width='auto', id='card-high', className='text-center')
