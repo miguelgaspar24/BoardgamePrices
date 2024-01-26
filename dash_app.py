@@ -3,6 +3,7 @@ import os
 import pandas as pd
 
 from dash import Dash, Input, Output, dcc, html
+import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
@@ -25,16 +26,12 @@ master_df = master_df[column_order].sort_values(by='date')
 games = master_df['name'].sort_values().unique()
 colors = {'JogoNaMesa': 'red', 'Gameplay': 'blue', 'JogarTabuleiro': 'green'}
 stores = list(colors.keys())
+sites = {'JogoNaMesa': 'https://jogonamesa.pt/P/home.cgi',
+         'Gameplay': 'https://gameplay.pt/pt/',
+         'JogarTabuleiro': 'https://jogartabuleiro.pt/'
+         }
 
-external_stylesheets = [
-    {
-        'href': (
-            'https://fonts.googleapis.com/css2?'
-            'family=Lato:wght@400;700&display=swap'
-        ),
-        'rel': 'stylesheet',
-    },
-]
+external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'The Price is Right'
@@ -44,18 +41,12 @@ app.layout = html.Div(
         html.Div(
             children=[
                 html.P(children='🃏♟️🎲🧩', className='header-emoji'),
-                html.H1(
-                    children='The Price is Right: Board Game Edition', className='header-title'
-                ),
-                html.P(
-                    children=(
-                        'Track the prices of board games across online vendors to find the best deals at any given time'
-                    ),
-                    className='header-description',
-                ),
-            ],
+                html.H1(children='The Price is Right: Board Game Edition', className='header-title'),
+                html.P(children=('Track the prices of board games across online vendors to find the best deals at any given time'),
+                       className='header-description')
+                    ],
             className='header',
-        ),
+                ),
         html.Div(
             children=[
                 html.Div(
@@ -106,6 +97,29 @@ app.layout = html.Div(
             ],
             className='menu',
         ),
+        dbc.Row(
+            [
+                dbc.Col(dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5('Lowest Price', className='card-title'),
+                                    html.P(str('Some placeholder text.'))
+                                ], id='card-low'
+                            )
+                        ), width=6, ),
+                dbc.Col(dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5('Highest Price', className='card-title'),
+                                    html.P(
+                                        'This card also has some text content and not much else, but '
+                                        'it is twice as wide as the first card.'
+                                    )
+                                ], id='card-high'
+                            )
+                        ), width=6, ),
+            ], className='wrapper'
+        ),
         html.Div(
             children=[
                 html.Div(
@@ -120,6 +134,7 @@ app.layout = html.Div(
         ),
     ]
 )
+
 
 @app.callback(
     Output(component_id='price-chart', component_property='figure'),
@@ -168,11 +183,55 @@ def update_charts(game, stores, start_date, end_date):
     Input(component_id='game-filter', component_property='value')
 )
 def update_date_picker_range(game):
+    
+    filtered_data = master_df.query('name == @game')
 
-    max_date_allowed = master_df['date'].max().date()
-    end_date = master_df['date'].max().date()
-    print(master_df['date'].max().date())
+    max_date_allowed = filtered_data['date'].max().date()
+    end_date = filtered_data['date'].max().date()
+
     return (max_date_allowed, end_date)
+
+
+@app.callback(
+    Output(component_id='card-low', component_property='children'),
+    Output(component_id='card-high', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_date_picker_range(game):
+
+    filtered_data = master_df.query('name == @game')
+
+    min_values = [filtered_data[store].min() for store in stores]
+    min_idx = min_values.index(min(min_values))
+    min_store = stores[min_idx]
+    min_site = sites[min_store]
+
+    max_values = [filtered_data[store].max() for store in stores]
+    max_idx = max_values.index(max(max_values))
+    max_store = stores[max_idx]
+    max_site = sites[max_store]
+
+    low_card = dbc.Col(dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5('Lowest Price', className='bi bi-caret-down-fill text-success'),
+                                    html.H3(str(min(min_values))),
+                                    dbc.Button('@ ' + min_store, color='success', outline=True, href=min_site),
+                                ]
+                            )
+                        ), width='auto', id='card-low', className='text-center')
+
+    high_card = dbc.Col(dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5('Highest Price', className='bi bi-caret-up-fill text-danger'),
+                                    html.H3(str(max(max_values))),
+                                    dbc.Button('@ ' + max_store, color='danger', outline=True, href=max_site),
+                                ]
+                            )
+                        ), width='auto', id='card-high', className='text-center')
+
+    return (low_card, high_card)
 
 
 if __name__ == '__main__':
