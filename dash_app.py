@@ -49,46 +49,44 @@ app.layout = html.Div(
                 html.P(children=('Track the prices of board games across online vendors to find the best deals at any given time'),
                        className='header-description')
                     ],
-            className='header',
-                ),
+            className='header'
+        ),
         html.Div(
             children=[
                 html.Div(
                     children=[
                         html.Div(children='Game', className='menu-title'),
                         dcc.Dropdown(
-                            id='game-filter',
                             options=[
-                                {'label': game, 'value': game}
-                                for game in games
-                            ],
+                                    {'label': game, 'value': game}
+                                    for game in games
+                                    ],
+                            id='game-filter',
                             clearable=False,
                             searchable=True,
                             className='dropdown',
                             placeholder='Select a game',
                             optionHeight=50
-                        ),
+                        )
                     ]
                 ),
                 html.Div(
                     children=[
                         html.Div(children='Store', className='menu-title'),
                         dcc.Checklist(
-                            id='store-filter',
                             options=[
-                                {'label': store, 'value': store}
-                                for store in list(stores_prop.keys())
-                            ],
+                                    {'label': ' ' + store, 'value': store}
+                                    for store in list(stores_prop.keys())
+                                    ],
                             value=list(stores_prop.keys()),
-                            className='checklist', inline=True
-                        ),
+                            id='store-filter',
+                            className='checklist'
+                        )
                     ]
                 ),
                 html.Div(
                     children=[
-                        html.Div(
-                            children='Date Range', className='menu-title'
-                        ),
+                        html.Div(children='Date Range', className='menu-title'),
                         dcc.DatePickerRange(
                             id='date-range',
                             min_date_allowed=master_df['date'].min().date(),
@@ -96,46 +94,47 @@ app.layout = html.Div(
                             start_date=master_df['date'].min().date(),
                             end_date=master_df['date'].max().date(),
                             display_format ='DD/MM/YYYY'
-                        ),
+                        )
                     ]
-                ),
+                )
             ],
-            className='menu',
+            className='menu'
         ),
         dbc.Row(
             [
-                dbc.Col(dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5('Lowest Price', className='card-title'),
-                                    html.P(str('Some placeholder text.'))
-                                ], id='card-low'
+            dbc.Col(dbc.Card(dbc.CardBody(
+                            [
+                            html.H5('Lowest Price', className='card-title'),
+                            html.P(str('Some placeholder text.'))
+                            ],
+                            id='card-lowest'
                             )
-                        ), width=6),
-                dbc.Col(dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5('Highest Price', className='card-title'),
-                                    html.P(
-                                        'Another placeholder text.'
-                                    )
-                                ], id='card-high'
+                        )
+                ),
+            dbc.Col(dbc.Card(dbc.CardBody(
+                            [
+                            html.H5('Highest Price', className='card-title'),
+                            html.P('Another placeholder text.')
+                            ],
+                            id='card-highest'
                             )
-                        ), width=6)
-            ], className='wrapper'
+                        )
+                )
+            ],
+            className='wrapper'
         ),
         html.Div(
             children=[
                 html.Div(
                     children=dcc.Graph(
-                        id='price-chart',
-                        config={'displayModeBar': False},
-                    ),
-                    className='card',
-                ),
-            ],
-            className='wrapper',
-        ),
+                                id='price-chart',
+                                config={'displayModeBar': False},
+                                ),
+                                className='card-graph'
+                    )
+                ],
+                className='wrapper'
+            )
     ]
 )
 
@@ -160,14 +159,14 @@ def update_charts(game, stores, start_date, end_date):
                         horizontal_spacing=0.009
                         )
     
-    fig.update_layout(margin={'l': 30, 'r': 10, 'b': 50, 't': 30},
+    fig.update_layout(margin={'l': 30, 'r': 30, 'b': 50, 't': 30},
                       yaxis={'title': 'Price', 'titlefont': {'size': 18}, 'ticksuffix': '€', 'tickformat': '.2f'},
                       xaxis={'title': 'Date', 'titlefont': {'size': 18}},
                       legend={'title': 'Store', 'font': {'size': 14}},
                       title={'text': 'Price over Time', 'font': {'size': 24}, 'yref': 'paper', 'automargin': True, 'y': 0.9, 'x': 0.5, 'xanchor': 'center'}
                       )
     
-    for store in stores:
+    for store in list(stores_prop.keys()):
         fig.append_trace({'x': filtered_data['date'],
                           'y': filtered_data[store],
                           'type': 'scatter',
@@ -197,8 +196,8 @@ def update_date_picker_range(game):
 
 
 @app.callback(
-    Output(component_id='card-low', component_property='children'),
-    Output(component_id='card-high', component_property='children'),
+    Output(component_id='card-lowest', component_property='children'),
+    Output(component_id='card-highest', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_date_picker_range(game):
@@ -226,7 +225,7 @@ def update_date_picker_range(game):
                                     className='card-button'
                                     )   
                         ],
-                        id='card-low',
+                        id='card-lowest',
                         className='text-center'
                     )
                 )
@@ -240,7 +239,7 @@ def update_date_picker_range(game):
                                         className='card-button'
                                         )
                             ],
-                            id='card-high',
+                            id='card-highest',
                             className='text-center'
                         )
                     )

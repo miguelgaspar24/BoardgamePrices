@@ -6,8 +6,19 @@ body {
 }
 
 .card {
+  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18)
+}
+
+.card-button {
+  background-color: rgb(232, 220, 202);
+  color: #000000;
+  border-color: #1e6c84;
+  border-width: 3px
+}
+
+.card-graph {
   box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
-  margin-bottom: 24px
+  margin-bottom: 24px;
 }
 
 .header {
@@ -42,16 +53,17 @@ body {
   box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
   display: flex;
   justify-content: space-evenly;
-  height: 112px;
+  height: 140px;
   margin: -80px auto 0 auto;
   padding-top: 24px;
-  width: 912px
+  width: 1000px
 }
 
 .menu-title {
   color: #079A82;
   font-weight: bold;
-  margin-bottom: 6px
+  margin-bottom: 6px;
+  font-size: 18px
 }
 
 .Select-control {
@@ -71,19 +83,8 @@ body {
 .wrapper {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 32px;
+  margin-top: 30px;
   max-width: 1024px;
   padding-left: 10px;
   padding-right: 10px
-}
-
-.card-button {
-  background-color: rgb(232, 220, 202);
-  color: #000000;
-  border-color: #1e6c84;
-  border-width: 3px
-  /*height: 100px;
-  width: 100px;
-  margin-top: 50px;
-  margin-left: 50px*/
 }
