@@ -62,10 +62,11 @@ app.layout = html.Div(
                                 {'label': game, 'value': game}
                                 for game in games
                             ],
-                            value='Last Will',
                             clearable=False,
                             searchable=True,
                             className='dropdown',
+                            placeholder='Select a game',
+                            optionHeight=50
                         ),
                     ]
                 ),
@@ -79,7 +80,7 @@ app.layout = html.Div(
                                 for store in list(stores_prop.keys())
                             ],
                             value=list(stores_prop.keys()),
-                            className='checklist',
+                            className='checklist', inline=True
                         ),
                     ]
                 ),
@@ -110,18 +111,17 @@ app.layout = html.Div(
                                     html.P(str('Some placeholder text.'))
                                 ], id='card-low'
                             )
-                        ), width=6, ),
+                        ), width=6),
                 dbc.Col(dbc.Card(
                             dbc.CardBody(
                                 [
                                     html.H5('Highest Price', className='card-title'),
                                     html.P(
-                                        'This card also has some text content and not much else, but '
-                                        'it is twice as wide as the first card.'
+                                        'Another placeholder text.'
                                     )
                                 ], id='card-high'
                             )
-                        ), width=6, ),
+                        ), width=6)
             ], className='wrapper'
         ),
         html.Div(
@@ -217,27 +217,33 @@ def update_date_picker_range(game):
     max_site = stores_prop[max_store]['url']
     max_card_value = 'No Data Available' if math.isnan(max(max_values)) else '{:.2f}'.format(max(max_values)) + '€'
 
-    low_card = dbc.Col(dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5('Lowest Price', className='bi bi-caret-down-fill text-success'),
-                                    html.H3(min_card_value),
-                                    dbc.Button(color='dark', outline=False, href=min_site,
-                                               children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store])
-                                ]
-                            )
-                        ), width='auto', id='card-low', className='text-center')
+    low_card = dbc.Col(dbc.CardBody(
+                        [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
+                         html.H3(min_card_value),
+                         dbc.Button(children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store],
+                                    outline=False,
+                                    href=min_site,
+                                    className='card-button'
+                                    )   
+                        ],
+                        id='card-low',
+                        className='text-center'
+                    )
+                )
 
-    high_card = dbc.Col(dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5('Highest Price', className='bi bi-caret-up-fill text-danger'),
-                                    html.H3(max_card_value),
-                                    dbc.Button(color='dark', outline=False, href=max_site,
-                                               children=[html.Img(src=stores_prop[max_store]['favicon']), ' ' + max_store])
-                                ]
-                            )
-                        ), width='auto', id='card-high', className='text-center')
+    high_card = dbc.Col(dbc.CardBody(
+                            [html.H5(' Highest Price', className='bi bi-caret-up-fill text-danger'),
+                             html.H3(max_card_value),
+                             dbc.Button(children=[html.Img(src=stores_prop[max_store]['favicon']), ' ' + max_store],
+                                        outline=False,
+                                        href=max_site,
+                                        className='card-button'
+                                        )
+                            ],
+                            id='card-high',
+                            className='text-center'
+                        )
+                    )
 
     return (low_card, high_card)
 

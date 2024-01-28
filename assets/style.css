@@ -76,3 +76,14 @@ body {
   padding-left: 10px;
   padding-right: 10px
 }
+
+.card-button {
+  background-color: rgb(232, 220, 202);
+  color: #000000;
+  border-color: #1e6c84;
+  border-width: 3px
+  /*height: 100px;
+  width: 100px;
+  margin-top: 50px;
+  margin-left: 50px*/
+}
