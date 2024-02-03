@@ -6,7 +6,8 @@ body {
 }
 
 .card {
-  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18)
+  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
+  height: 200px
 }
 
 .card-button {
@@ -78,6 +79,10 @@ body {
 .Select--single>.Select-control .Select-value,
 .Select-placeholder {
   line-height: 48px
+}
+
+.text-center {
+  margin-top: 10px
 }
 
 .wrapper {

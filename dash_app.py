@@ -102,21 +102,19 @@ app.layout = html.Div(
         ),
         dbc.Row(
             [
-            dbc.Col(dbc.Card(dbc.CardBody(
-                            [
-                            html.H5('Lowest Price', className='card-title'),
-                            html.P(str('Some placeholder text.'))
-                            ],
-                            id='card-lowest'
+             dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
+                                html.H3('No Data Available')],
+                                id='card-lowest',
+                                className='text-center'
                             )
                         )
                 ),
             dbc.Col(dbc.Card(dbc.CardBody(
-                            [
-                            html.H5('Highest Price', className='card-title'),
-                            html.P('Another placeholder text.')
-                            ],
-                            id='card-highest'
+                                [html.H5(' Highest Price', className='bi bi-caret-up-fill text-danger'),
+                                html.H3('No Data Available')],
+                                id='card-highest',
+                                className='text-center'
                             )
                         )
                 )
@@ -200,7 +198,7 @@ def update_date_picker_range(game):
     Output(component_id='card-highest', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
-def update_date_picker_range(game):
+def update_min_max_cards(game):
 
     filtered_data = master_df.query('name == @game')
 
@@ -216,34 +214,30 @@ def update_date_picker_range(game):
     max_site = stores_prop[max_store]['url']
     max_card_value = 'No Data Available' if math.isnan(max(max_values)) else '{:.2f}'.format(max(max_values)) + '€'
 
-    low_card = dbc.Col(dbc.CardBody(
-                        [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
-                         html.H3(min_card_value),
-                         dbc.Button(children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store],
+    low_card = html.Div(
+                    [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
+                        html.H3(min_card_value),
+                        dbc.Button(children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store],
                                     outline=False,
                                     href=min_site,
                                     className='card-button'
-                                    )   
-                        ],
-                        id='card-lowest',
-                        className='text-center'
-                    )
+                                    )],
+                    id='card-lowest',
+                    className='text-center'
                 )
-
-    high_card = dbc.Col(dbc.CardBody(
-                            [html.H5(' Highest Price', className='bi bi-caret-up-fill text-danger'),
-                             html.H3(max_card_value),
-                             dbc.Button(children=[html.Img(src=stores_prop[max_store]['favicon']), ' ' + max_store],
-                                        outline=False,
-                                        href=max_site,
-                                        className='card-button'
-                                        )
-                            ],
-                            id='card-highest',
-                            className='text-center'
-                        )
-                    )
-
+                
+    high_card = html.Div(
+                    [html.H5(' Highest Price', className='bi bi-caret-up-fill text-danger'),
+                     html.H3(max_card_value),
+                     dbc.Button(children=[html.Img(src=stores_prop[max_store]['favicon']), ' ' + max_store],
+                                outline=False,
+                                href=max_site,
+                                className='card-button'
+                                )],
+                    id='card-highest',
+                    className='text-center'
+                )
+                    
     return (low_card, high_card)
 
 
