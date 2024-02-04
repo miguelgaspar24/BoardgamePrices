@@ -52,7 +52,7 @@ def get_prices():
 				if len(price_tags) != 0:
 
 					for tag in price_tags:
-						price = tag.contents[1].split('€')[1]
+						price = '{:.2f}'.format(tag.contents[1].split('€')[1])
 						availability = tag.find_next('span').contents[0].string
 						if 'Sem prev' not in availability:
 							prices.append(price)

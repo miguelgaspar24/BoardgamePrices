@@ -49,7 +49,7 @@ def get_prices(list_of_games):
 			if game_language != 'Inglês':
 				raise IndexError
 
-			price = price_results[1].text[1:]
+			price = '{:.2f}'.format(price_results[1].text[1:])
 
 			games[game] = price
 		
