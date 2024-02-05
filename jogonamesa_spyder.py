@@ -1,6 +1,7 @@
 
 from bs4 import BeautifulSoup
 import numpy as np
+import os
 import pandas as pd
 import requests
 
@@ -34,6 +35,7 @@ def get_prices():
 	wishlist_urls = [wishlist_url + '?accao=8&num={}'.format(str(page_number)) for page_number in range(1, n_pages + 1)]
 
 	games = {}
+	bgg_ids = {}
 
 	progress_bar = alive_it(wishlist_urls, bar='smooth', spinner='classic', title='Spyder 1 - JogoNaMesa:    ')
 	for url in progress_bar:
@@ -46,6 +48,10 @@ def get_prices():
 
 		for i, (name_block, price_block) in enumerate(zip(name_blocks, price_blocks)):
 			name = name_block.a.string
+
+			bgg_id = name_block.find('a', class_='bgg')['href'].split('/boardgame/')[1]
+			bgg_ids[name] = int(bgg_id)
+
 			price_tags = price_block.find_all('a', 'botao')
 			try:
 				prices = []
@@ -68,6 +74,8 @@ def get_prices():
 			except AttributeError:
 				games[name] = np.nan
 
+	games_list = list(games.keys())
+
 	price_table = pd.DataFrame.from_dict(games, orient='index').reset_index()
 
 	price_table.columns = ['name', 'JogoNaMesa']
@@ -77,6 +85,31 @@ def get_prices():
 	price_table.reset_index(inplace=True)
 	price_table.drop(columns=['index'], inplace=True)
 
-	games_list = list(games.keys())
+	bgg_id_table = pd.DataFrame.from_dict(bgg_ids, orient='index').reset_index()
+	
+	bgg_id_table.columns = ['name', 'BGG_ID']
+	bgg_id_table['name'] = bgg_id_table['name'].astype('str')
+	bgg_id_table['BGG_ID'] = bgg_id_table['BGG_ID'].astype('int')
+	bgg_id_table.sort_values(by=['name'], inplace=True)
+	bgg_id_table.reset_index(inplace=True)
+	bgg_id_table.drop(columns=['index'], inplace=True)
+
+	savepath = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
+	filename = os.path.join(savepath, 'boardgames_bgg_ids.xlsx')
+	if not os.path.isfile(filename):
+		bgg_id_table.to_excel(
+							filename,
+							index=False,
+							sheet_name='data',
+							na_rep='NaN',
+							)
+	else:
+		with pd.ExcelWriter(filename, engine='openpyxl', mode='w') as writer:
+			bgg_id_table.to_excel(
+								writer,
+								index=False,
+								sheet_name='data',
+								na_rep='NaN',
+								)
 
 	return games_list, price_table
