@@ -49,6 +49,17 @@ body {
   text-align: center
 }
 
+.image {
+  margin-top: 10px;
+  margin-left: 80px;
+  max-height: 200px;
+  padding-left: 24px;
+  margin-top: 30px;
+  max-width: 1024px;
+  padding-left: 10px;
+  padding-right: 10px
+}
+
 .menu {
   background-color: #FFFFFF;
   box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);

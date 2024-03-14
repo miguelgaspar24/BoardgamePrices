@@ -8,11 +8,18 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+import bgg_spyder
+from PIL import Image
+import requests
+from io import BytesIO
+
 
 root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
 
 master_df = pd.DataFrame()
 for year in os.listdir(root_path):
+    if year.endswith('.xlsx'):
+        continue
     for month in os.listdir(root_path + '\\' + year):
         xl = pd.ExcelFile(os.path.join(root_path, year, month))
         dates = xl.sheet_names
@@ -99,6 +106,14 @@ app.layout = html.Div(
                 )
             ],
             className='menu'
+        ),
+        dbc.Card(dbc.CardBody(html.Img(
+            id='game-cover-image',
+            className='image',
+            alt='Game Image Here',
+            src=''),
+            ), 
+            className='wrapper'
         ),
         dbc.Row(
             [
@@ -241,5 +256,31 @@ def update_min_max_cards(game):
     return (low_card, high_card)
 
 
+
+@app.callback(
+    Output(component_id='game-cover-image', component_property='src'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_game_image(game):
+
+    if game is None:
+        return ''
+
+    #root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    image_url = game_props['game_image']
+
+    image_content = requests.get(image_url)
+    image_display = Image.open(BytesIO(image_content.content))
+
+    image_source = image_display
+
+    return image_source
+
+
 if __name__ == '__main__':
+
     app.run_server(debug=True)
