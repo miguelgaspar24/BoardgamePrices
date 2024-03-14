@@ -51,9 +51,9 @@ def get_game_properties(file_path, game_name):
     game_properties['mechanics'] = [mechanics_list[n]['name'] for n in range(len(mechanics_list))]
 
     #game_properties['game_image'] = json.loads(clean_script)['item']['images']['thumb']        # small size
-    #game_properties['game_image'] = json.loads(clean_script)['item']['images']['previewthumb'] # medium size
-    #game_properties['game_image'] = json.loads(clean_script)['item']['imageurl']               # medium-large size
-    game_properties['game_image'] = json.loads(clean_script)['item']['images']['original']      # large size
+    #game_properties['game_image'] = json.loads(clean_script)['item']['imageurl']               # medium size
+    game_properties['game_image'] = json.loads(clean_script)['item']['images']['previewthumb']  # medium-large size
+    #game_properties['game_image'] = json.loads(clean_script)['item']['images']['original']     # large size
     game_properties['background_image'] = json.loads(clean_script)['item']['topimageurl']
 
     return game_properties
