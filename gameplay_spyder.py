@@ -53,7 +53,7 @@ def get_prices(list_of_games):
                     game_page = session.get(result['href'], headers=gameplay_headers)
                     game_text = game_page.text
                     game_soup = BeautifulSoup(game_text, features='html.parser')
-                    price = '{:.2f}'.format(game_soup.find('div', class_='current-price').span.text[1:])
+                    price = '{:.2f}'.format(float(game_soup.find('div', class_='current-price').span.text[1:]))
                     break
 
                 else:

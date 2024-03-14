@@ -58,7 +58,7 @@ def get_prices():
 				if len(price_tags) != 0:
 
 					for tag in price_tags:
-						price = '{:.2f}'.format(tag.contents[1].split('€')[1])
+						price = '{:.2f}'.format(float(tag.contents[1].split('€')[1]))
 						availability = tag.find_next('span').contents[0].string
 						if 'Sem prev' not in availability:
 							prices.append(price)
@@ -88,8 +88,8 @@ def get_prices():
 	bgg_id_table = pd.DataFrame.from_dict(bgg_ids, orient='index').reset_index()
 	
 	bgg_id_table.columns = ['name', 'BGG_ID']
-	bgg_id_table['name'] = bgg_id_table['name'].astype('str')
-	bgg_id_table['BGG_ID'] = bgg_id_table['BGG_ID'].astype('int')
+	#bgg_id_table['name'] = bgg_id_table['name'].astype('str')
+	#bgg_id_table['BGG_ID'] = bgg_id_table['BGG_ID'].astype('int')
 	bgg_id_table.sort_values(by=['name'], inplace=True)
 	bgg_id_table.reset_index(inplace=True)
 	bgg_id_table.drop(columns=['index'], inplace=True)
