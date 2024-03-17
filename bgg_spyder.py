@@ -44,6 +44,9 @@ def get_game_properties(file_path, game_name):
     game_properties['artist'] = json.loads(clean_script)['item']['links']['boardgameartist'][0]['name']
     game_properties['publisher'] = json.loads(clean_script)['item']['links']['boardgamepublisher'][0]['name']
 
+    types_list = json.loads(clean_script)['item']['links']['boardgamesubdomain']
+    game_properties['types'] = [types_list[n]['name'].split(' ')[0] for n in range(len(types_list))]
+
     categories_list = json.loads(clean_script)['item']['links']['boardgamecategory']
     game_properties['categories'] = [categories_list[n]['name'] for n in range(len(categories_list))]
 
