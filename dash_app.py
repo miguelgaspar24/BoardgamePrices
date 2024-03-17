@@ -107,12 +107,93 @@ app.layout = html.Div(
             ],
             className='menu'
         ),
-        dbc.Card(dbc.CardBody(html.Img(
-            id='game-cover-image',
-            className='image',
-            alt='Game Image Here',
-            src=''),
-            ), 
+        dbc.Row(
+            [
+             dbc.Col(dbc.Card(dbc.CardBody(html.Img(
+                            id='game-cover-image',
+                            className='image',
+                            alt='Game Image Here',
+                            src=''),
+                            ), 
+                    )
+                ),
+            dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5('Average Rating'),
+                                 html.H3('No Data Available')
+                                ],
+                                id='average-rating',
+                                className='text-center'
+                            ),
+                        )
+                ),
+            dbc.Col(dbc.Card(dbc.CardBody(
+                                id='complexity',
+                                className='text-center'
+                            )
+                        )
+                ),
+            ],
+            className='wrapper'
+        ),
+        dbc.Row(
+            [
+             dbc.Col(dbc.Card(dbc.CardBody(
+                            [html.H5('Player Count'),
+                             html.H3('No Data Available')
+                            ],
+                            id='player-count',
+                            className='text-center'
+                            ), 
+                    )
+                ),
+            dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5('Year Published'),
+                                 html.H3('No Data Available')
+                                ],
+                                id='date-language',
+                                className='text-center'
+                            ),
+                        )
+                ),
+            dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5('Creators'),
+                                 html.H3('No Data Available')
+                                ],
+                                id='creators',
+                                className='text-center'
+                            )
+                        )
+                ),
+            ],
+            className='wrapper'
+        ),
+        dbc.Row(
+            [
+            dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5('Types'),
+                                html.H3('No Data Available')],
+                                id='types',
+                                className='text-center'
+                            )
+                        )
+                ),
+             dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5('Categories'),
+                                html.H3('No Data Available')],
+                                id='categories',
+                                className='text-center'
+                            )
+                        )
+                ),
+            dbc.Col(dbc.Card(dbc.CardBody(
+                                [html.H5('Mechanics'),
+                                html.H3('No Data Available')],
+                                id='mechanics',
+                                className='text-center'
+                            )
+                        )
+                )
+            ],
             className='wrapper'
         ),
         dbc.Row(
@@ -231,12 +312,12 @@ def update_min_max_cards(game):
 
     low_card = html.Div(
                     [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
-                        html.H3(min_card_value),
-                        dbc.Button(children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store],
-                                    outline=False,
-                                    href=min_site,
-                                    className='card-button'
-                                    )],
+                     html.H3(min_card_value),
+                     dbc.Button(children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store],
+                                outline=False,
+                                href=min_site,
+                                className='card-button'
+                                )],
                     id='card-lowest',
                     className='text-center'
                 )
@@ -254,7 +335,6 @@ def update_min_max_cards(game):
                 )
                     
     return (low_card, high_card)
-
 
 
 @app.callback(
@@ -279,6 +359,231 @@ def update_game_image(game):
     image_source = image_display
 
     return image_source
+
+
+@app.callback(
+    Output(component_id='average-rating', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_game_rating(game):
+
+    if game is None:
+        return [html.H5('Average Rating'),
+                html.H3('No Data Available')]
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_rating = game_props['average_rating']
+    game_votes = game_props['n_rating_votes']
+
+    rating = html.Div(
+                        [html.H5('Average Rating'),
+                         html.H3(round(float(game_rating), 1)),
+                         html.H5(game_votes + ' votes')
+                        ],
+                        id='average-rating',
+                        className='text-center'
+                    ),
+
+    return rating
+
+
+@app.callback(
+    Output(component_id='complexity', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_complexity(game):
+
+    if game is None:
+        return 'Complexity Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_complexity = game_props['complexity']
+    game_min_time = game_props['min_playtime']
+    game_max_time = game_props['max_playtime']
+
+    complexity = html.Div(
+                    [html.H5('Complexity'),
+                     html.H3(str(round(float(game_complexity), 1)) + ' / 5'),
+                     html.H5('Play Time'),
+                     html.H3(game_min_time + ' - ' + game_max_time + ' mins.')
+                    ],
+                    id='complexity',
+                    className='text-center'
+                ),
+
+    return complexity
+
+
+@app.callback(
+    Output(component_id='player-count', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_player_count(game):
+
+    if game is None:
+        return 'Player Count Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_min_count = game_props['min_players']
+    game_max_count = game_props['max_players']
+
+    player_count = html.Div(
+                    [html.H5('Player Count'),
+                     html.H3(game_min_count + ' - ' + game_max_count)
+                    ],
+                    id='player-count',
+                    className='text-center'
+                ),
+
+    return player_count
+
+
+@app.callback(
+    Output(component_id='date-language', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_date_language(game):
+
+    if game is None:
+        return 'Year Published Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_year = game_props['year_published']
+    game_language = game_props['language_dependence']
+
+    year_published = html.Div(
+                    [html.H5('Year Published Here'),
+                     html.H3(game_year),
+                     html.H5('Language Dependence Here'),
+                     html.H3(game_language)
+                    ],
+                    id='date-language',
+                    className='text-center'
+                ),
+
+    return year_published
+
+
+@app.callback(
+    Output(component_id='creators', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_creators(game):
+
+    if game is None:
+        return 'Creators Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_designer = game_props['designer']
+    game_artist = game_props['artist']
+    game_publisher = game_props['publisher']
+
+    creators = html.Div(
+                    [html.H5('Designer Here'),
+                     html.H3(game_designer),
+                     html.H5('Artist Here'),
+                     html.H3(game_artist),
+                     html.H5('Publisher Here'),
+                     html.H3(game_publisher)
+                    ],
+                    id='creators',
+                    className='text-center'
+                ),
+
+    return creators
+
+
+@app.callback(
+    Output(component_id='types', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_types(game):
+
+    if game is None:
+        return 'Categories Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_types = game_props['types']
+
+    types = html.Div(
+                    [html.H5('Types Here'),
+                     html.H3([html.P(typ) for typ in game_types])
+                    ],
+                    id='types',
+                    className='text-center'
+                ),
+
+    return types
+
+
+@app.callback(
+    Output(component_id='categories', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_categories(game):
+
+    if game is None:
+        return 'Categories Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_categories = game_props['categories']
+
+    categories = html.Div(
+                    [html.H5('Categories Here'),
+                     html.H3([html.P(cat) for cat in game_categories])
+                    ],
+                    id='categories',
+                    className='text-center'
+                ),
+
+    return categories
+
+
+@app.callback(
+    Output(component_id='mechanics', component_property='children'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_mechanics(game):
+
+    if game is None:
+        return 'Mechanics Here'
+
+    global root_path
+
+    game_props = bgg_spyder.get_game_properties(root_path, game)
+
+    game_mechanics = game_props['mechanics']
+
+    mechanics = html.Div(
+                    [html.H5('Mechanics Here'),
+                     html.H3([html.P(mech) for mech in game_mechanics])
+                    ],
+                    id='mechanics',
+                    className='text-center'
+                ),
+
+    return mechanics
 
 
 if __name__ == '__main__':
