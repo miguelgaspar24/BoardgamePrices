@@ -9,7 +9,7 @@ import pandas as pd
 
 import jogonamesa_spyder as spyder1
 import gameplay_spyder as spyder2
-#import jogartabuleiro_spyder as spyder3
+import jogartabuleiro_spyder as spyder3
 
 
 def set_custom_logger(logger_level, savepath, log_filename):
@@ -53,10 +53,10 @@ def main(custom_logger, savepath):
 
 	game_list, table1 = spyder1.get_prices()
 	table2 = spyder2.get_prices(game_list)
-	#table3 = spyder3.get_prices(game_list)
+	table3 = spyder3.get_prices(game_list)
 
-	#temp_merge1 = table1.merge(table2, on='name', how='left')
-	#full_table = temp_merge1.merge(table3, on='name', how='left')
+	temp_merge1 = table1.merge(table2, on='name', how='left')
+	full_table = temp_merge1.merge(table3, on='name', how='left')
 	full_table = table1.merge(table2, on='name', how='left')
 
 	today = dt.datetime.today()
