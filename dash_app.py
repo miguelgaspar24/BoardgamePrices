@@ -109,98 +109,89 @@ app.layout = html.Div(
         ),
         dbc.Row(
             [
-             dbc.Col(dbc.Card(dbc.CardBody(html.Img(
+             dbc.Col(dbc.CardBody(
+                        [html.Img(
                             id='game-cover-image',
                             className='image',
-                            alt='Game Image Here',
-                            src=''),
-                            ), 
-                    )
-                ),
-            dbc.Col(dbc.Card(dbc.CardBody(
-                                [html.H5('Average Rating'),
-                                 html.H3('No Data Available')
-                                ],
-                                id='average-rating',
-                                className='text-center'
-                            ),
+                            alt='Game Cover',
+                            src=''
+                                )
+                            ]
                         )
-                ),
-            dbc.Col(dbc.Card(dbc.CardBody(
-                                id='complexity',
-                                className='text-center'
-                            )
-                        )
-                ),
-            ],
-            className='wrapper'
-        ),
-        dbc.Row(
-            [
-             dbc.Col(dbc.Card(dbc.CardBody(
-                            [html.H5('Player Count'),
-                             html.H3('No Data Available')
-                            ],
-                            id='player-count',
-                            className='text-center'
-                            ), 
-                    )
-                ),
-            dbc.Col(dbc.Card(dbc.CardBody(
-                                [html.H5('Year Published'),
-                                 html.H3('No Data Available')
+                    ),
+            dbc.Col(dbc.CardBody(
+                    [html.H6('Average Rating'),
+                    html.H5('No Data'),
+                    html.Br(),
+                    html.H6('Game Complexity'),
+                    html.H5('No Data')
+                    ],
+                    id='average-rating-complexity',
+                    className='text-center'
+                )
+            ),
+           dbc.Col(dbc.CardBody(
+                    [html.H6('Player Count'),
+                    html.H5('No Data'),
+                    html.Br(),
+                    html.H6('Play Time'),
+                    html.H5('No Data'),
+                    ],
+                    id='player-count-playtime',
+                    className='text-center'
+                )
+            ),
+            dbc.Col(dbc.CardBody(
+                                [html.H6('Year Published'),
+                                html.H5('No Data'),
+                                html.Br(),
+                                html.H6('Language Dependence'),
+                                html.H5('No Data')
                                 ],
                                 id='date-language',
                                 className='text-center'
                             ),
-                        )
-                ),
-            dbc.Col(dbc.Card(dbc.CardBody(
-                                [html.H5('Creators'),
-                                 html.H3('No Data Available')
-                                ],
-                                id='creators',
-                                className='text-center'
-                            )
-                        )
-                ),
-            ],
-            className='wrapper'
-        ),
+                    ),
+                ], className='wrapper'
+            ),
         dbc.Row(
             [
-            dbc.Col(dbc.Card(dbc.CardBody(
-                                [html.H5('Types'),
-                                html.H3('No Data Available')],
+            dbc.Col(dbc.CardBody(
+                [html.H6('Creators'),
+                html.H5('No Data')
+                ],
+                id='creators',
+                className='text-center'
+            )
+        ),
+            dbc.Col(dbc.CardBody(
+                                [html.H6('Types'),
+                                html.H5('No Data')],
                                 id='types',
                                 className='text-center'
                             )
-                        )
-                ),
-             dbc.Col(dbc.Card(dbc.CardBody(
-                                [html.H5('Categories'),
-                                html.H3('No Data Available')],
+                        ),
+             dbc.Col(dbc.CardBody(
+                                [html.H6('Categories'),
+                                html.H5('No Data')],
                                 id='categories',
                                 className='text-center'
                             )
-                        )
-                ),
-            dbc.Col(dbc.Card(dbc.CardBody(
-                                [html.H5('Mechanics'),
-                                html.H3('No Data Available')],
+                        ),
+            dbc.Col(dbc.CardBody(
+                                [html.H6('Mechanics'),
+                                html.H5('No Data')],
                                 id='mechanics',
                                 className='text-center'
                             )
                         )
-                )
-            ],
-            className='wrapper'
-        ),
+                    ], className='wrapper'
+                ),
         dbc.Row(
             [
              dbc.Col(dbc.Card(dbc.CardBody(
                                 [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
-                                html.H3('No Data Available')],
+                                html.H3('No Data')],
                                 id='card-lowest',
                                 className='text-center'
                             )
@@ -208,7 +199,7 @@ app.layout = html.Div(
                 ),
             dbc.Col(dbc.Card(dbc.CardBody(
                                 [html.H5(' Highest Price', className='bi bi-caret-up-fill text-danger'),
-                                html.H3('No Data Available')],
+                                html.H3('No Data')],
                                 id='card-highest',
                                 className='text-center'
                             )
@@ -302,13 +293,13 @@ def update_min_max_cards(game):
     min_idx = min_values.index(min(min_values))
     min_store = list(stores_prop.keys())[min_idx]
     min_site = stores_prop[min_store]['url']
-    min_card_value = 'No Data Available' if math.isnan(min(min_values)) else '{:.2f}'.format(min(min_values)) + '€'
+    min_card_value = 'No Data' if math.isnan(min(min_values)) else '{:.2f}'.format(min(min_values)) + '€'
 
     max_values = [filtered_data[store].max() for store in list(stores_prop.keys())]
     max_idx = max_values.index(max(max_values))
     max_store = list(stores_prop.keys())[max_idx]
     max_site = stores_prop[max_store]['url']
-    max_card_value = 'No Data Available' if math.isnan(max(max_values)) else '{:.2f}'.format(max(max_values)) + '€'
+    max_card_value = 'No Data' if math.isnan(max(max_values)) else '{:.2f}'.format(max(max_values)) + '€'
 
     low_card = html.Div(
                     [html.H5(' Lowest Price', className='bi bi-caret-down-fill text-success'),
@@ -362,14 +353,17 @@ def update_game_image(game):
 
 
 @app.callback(
-    Output(component_id='average-rating', component_property='children'),
+    Output(component_id='average-rating-complexity', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_game_rating(game):
 
     if game is None:
-        return [html.H5('Average Rating'),
-                html.H3('No Data Available')]
+        return [html.H6('Average Rating'),
+                html.H5('No Data'),
+                html.Br(),
+                html.H6('Game Complexity'),
+                html.H5('No Data')]
 
     global root_path
 
@@ -377,57 +371,36 @@ def update_game_rating(game):
 
     game_rating = game_props['average_rating']
     game_votes = game_props['n_rating_votes']
-
-    rating = html.Div(
-                        [html.H5('Average Rating'),
-                         html.H3(round(float(game_rating), 1)),
-                         html.H5(game_votes + ' votes')
-                        ],
-                        id='average-rating',
-                        className='text-center'
-                    ),
-
-    return rating
-
-
-@app.callback(
-    Output(component_id='complexity', component_property='children'),
-    Input(component_id='game-filter', component_property='value')
-)
-def update_complexity(game):
-
-    if game is None:
-        return 'Complexity Here'
-
-    global root_path
-
-    game_props = bgg_spyder.get_game_properties(root_path, game)
-
     game_complexity = game_props['complexity']
-    game_min_time = game_props['min_playtime']
-    game_max_time = game_props['max_playtime']
 
-    complexity = html.Div(
-                    [html.H5('Complexity'),
-                     html.H3(str(round(float(game_complexity), 1)) + ' / 5'),
-                     html.H5('Play Time'),
-                     html.H3(game_min_time + ' - ' + game_max_time + ' mins.')
-                    ],
-                    id='complexity',
-                    className='text-center'
-                ),
+    rating_complexity = html.Div(
+                            [html.H6('Average Rating'),
+                            html.H5(round(float(game_rating), 1)),
+                            html.H6(game_votes + ' votes'),
+                            html.Br(),
+                            html.H6('Complexity'),
+                            html.H5(str(round(float(game_complexity), 1)) + ' / 5'),
+                            ],
+                            id='average-rating-complexity',
+                            className='text-center'
+                        )
 
-    return complexity
+    return rating_complexity
 
 
 @app.callback(
-    Output(component_id='player-count', component_property='children'),
+    Output(component_id='player-count-playtime', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_player_count(game):
 
     if game is None:
-        return 'Player Count Here'
+        return [html.H6('Player Count'),
+                html.H5('No Data'),
+                html.Br(),
+                html.H6('Play Time'),
+                html.H5('No Data'),
+                ]
 
     global root_path
 
@@ -435,14 +408,19 @@ def update_player_count(game):
 
     game_min_count = game_props['min_players']
     game_max_count = game_props['max_players']
+    game_min_time = game_props['min_playtime']
+    game_max_time = game_props['max_playtime']
 
     player_count = html.Div(
-                    [html.H5('Player Count'),
-                     html.H3(game_min_count + ' - ' + game_max_count)
-                    ],
-                    id='player-count',
-                    className='text-center'
-                ),
+                        [html.H6('Player Count'),
+                        html.H5(game_min_count + ' - ' + game_max_count),
+                        html.Br(),
+                        html.H6('Play Time'),
+                        html.H5(game_min_time + ' - ' + game_max_time + ' mins.')
+                        ],
+                        id='player-count-playtime',
+                        className='text-center'
+                    )
 
     return player_count
 
@@ -454,7 +432,12 @@ def update_player_count(game):
 def update_date_language(game):
 
     if game is None:
-        return 'Year Published Here'
+        return [html.H6('Year Published'),
+                html.H5('No Data'),
+                html.Br(),
+                html.H6('Language Dependence'),
+                html.H5('No Data')
+                ]
 
     global root_path
 
@@ -464,14 +447,15 @@ def update_date_language(game):
     game_language = game_props['language_dependence']
 
     year_published = html.Div(
-                    [html.H5('Year Published Here'),
-                     html.H3(game_year),
-                     html.H5('Language Dependence Here'),
-                     html.H3(game_language)
+                    [html.H6('Year Published'),
+                     html.H5(game_year),
+                     html.Br(),
+                     html.H6('Language Dependence'),
+                     html.P(game_language)
                     ],
                     id='date-language',
                     className='text-center'
-                ),
+                )
 
     return year_published
 
@@ -483,7 +467,8 @@ def update_date_language(game):
 def update_creators(game):
 
     if game is None:
-        return 'Creators Here'
+        return [html.H6('Creators'),
+                html.H5('No Data')]
 
     global root_path
 
@@ -494,12 +479,14 @@ def update_creators(game):
     game_publisher = game_props['publisher']
 
     creators = html.Div(
-                    [html.H5('Designer Here'),
-                     html.H3(game_designer),
-                     html.H5('Artist Here'),
-                     html.H3(game_artist),
-                     html.H5('Publisher Here'),
-                     html.H3(game_publisher)
+                    [html.H5('Designer'),
+                     html.H6(game_designer),
+                     html.Br(),
+                     html.H5('Artist'),
+                     html.H6(game_artist),
+                     html.Br(),
+                     html.H5('Publisher'),
+                     html.H6(game_publisher)
                     ],
                     id='creators',
                     className='text-center'
@@ -515,7 +502,8 @@ def update_creators(game):
 def update_types(game):
 
     if game is None:
-        return 'Categories Here'
+        return [html.H6('Types'),
+                html.H5('No Data')]
 
     global root_path
 
@@ -524,8 +512,8 @@ def update_types(game):
     game_types = game_props['types']
 
     types = html.Div(
-                    [html.H5('Types Here'),
-                     html.H3([html.P(typ) for typ in game_types])
+                    [html.H5('Types'),
+                     html.H6([html.P(typ) for typ in game_types])
                     ],
                     id='types',
                     className='text-center'
@@ -541,7 +529,8 @@ def update_types(game):
 def update_categories(game):
 
     if game is None:
-        return 'Categories Here'
+        return [html.H6('Categories'),
+                html.H5('No Data')]
 
     global root_path
 
@@ -550,8 +539,8 @@ def update_categories(game):
     game_categories = game_props['categories']
 
     categories = html.Div(
-                    [html.H5('Categories Here'),
-                     html.H3([html.P(cat) for cat in game_categories])
+                    [html.H5('Categories'),
+                     html.H6([html.P(cat) for cat in game_categories])
                     ],
                     id='categories',
                     className='text-center'
@@ -567,7 +556,8 @@ def update_categories(game):
 def update_mechanics(game):
 
     if game is None:
-        return 'Mechanics Here'
+        return [html.H6('Mechanics'),
+                html.H5('No Data')]
 
     global root_path
 
@@ -576,8 +566,8 @@ def update_mechanics(game):
     game_mechanics = game_props['mechanics']
 
     mechanics = html.Div(
-                    [html.H5('Mechanics Here'),
-                     html.H3([html.P(mech) for mech in game_mechanics])
+                    [html.H5('Mechanics'),
+                     html.H6([html.P(mech) for mech in game_mechanics])
                     ],
                     id='mechanics',
                     className='text-center'
