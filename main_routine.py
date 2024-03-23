@@ -3,7 +3,6 @@ import datetime as dt
 import logging
 import os
 import sys
-from time import sleep
 
 import pandas as pd
 

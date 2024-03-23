@@ -6,7 +6,6 @@ from dash import Dash, Input, Output, dcc, html
 import dash_bootstrap_components as dbc
 import pandas as pd
 from plotly.subplots import make_subplots
-import plotly.graph_objects as go
 
 import bgg_spyder
 from PIL import Image
