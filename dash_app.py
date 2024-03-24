@@ -114,7 +114,13 @@ app.layout = html.Div(
                             className='image',
                             alt='Game Cover',
                             src=''
-                                )
+                            ),
+                            #dbc.Spinner(html.Div(id='loading-image'), color='warning')
+                            dcc.Loading(html.Div(id='loading-image'),
+                                        type='graph',
+                                        color='firebrick',
+                                        fullscreen=True
+                                    )
                             ]
                         )
                     ),
@@ -339,12 +345,13 @@ def update_min_max_cards(game):
 
 @app.callback(
     Output(component_id='game-cover-image', component_property='src'),
+    Output(component_id='loading-image', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_game_image(game):
 
     if game is None:
-        return ''
+        return ('', '')
 
     #root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
     global root_path
@@ -358,7 +365,7 @@ def update_game_image(game):
 
     image_source = image_display
 
-    return image_source
+    return (image_source, '')
 
 
 @app.callback(
@@ -470,9 +477,9 @@ def update_date_language(game):
 
 
 @app.callback(
-    Output('collapse-content', 'is_open'),
-    Input('collapse-button', 'n_clicks'),
-    State('collapse-content', 'is_open')
+    Output(component_id='collapse-content', component_property='is_open'),
+    Input(component_id='collapse-button', component_property='n_clicks'),
+    State(component_id='collapse-content', component_property='is_open')
 )
 def toggle_collapse(n, is_open):
     if n:
