@@ -2,7 +2,7 @@
 import math
 import os
 
-from dash import Dash, Input, Output, dcc, html
+from dash import Dash, Input, Output, State, dcc, html
 import dash_bootstrap_components as dbc
 import pandas as pd
 from plotly.subplots import make_subplots
@@ -156,13 +156,23 @@ app.layout = html.Div(
         dbc.Row(
             [
             dbc.Col(dbc.CardBody(
-                [html.H6('Creators'),
-                html.H5('No Data')
-                ],
-                id='creators',
-                className='text-center'
-            )
-        ),
+                        [
+                        dbc.Button(
+                            'Creators',
+                            id='collapse-button',
+                            className='mb-3',
+                            color='primary',
+                            n_clicks=0,
+                        ),
+                        dbc.Collapse(
+                            dbc.CardBody('No Data'),
+                            id='collapse-content',
+                            className='text-center',
+                            is_open=False,
+                        ),
+                    ], className='d-grid gap-2 col-6 mx-auto',
+                )
+            ),
             dbc.Col(dbc.CardBody(
                                 [html.H6('Types'),
                                 html.H5('No Data')],
@@ -460,7 +470,18 @@ def update_date_language(game):
 
 
 @app.callback(
-    Output(component_id='creators', component_property='children'),
+    Output('collapse-content', 'is_open'),
+    Input('collapse-button', 'n_clicks'),
+    State('collapse-content', 'is_open')
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output('collapse-content', 'children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_creators(game):
@@ -492,7 +513,6 @@ def update_creators(game):
                 ),
 
     return creators
-
 
 @app.callback(
     Output(component_id='types', component_property='children'),
