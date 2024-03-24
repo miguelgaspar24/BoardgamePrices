@@ -164,44 +164,39 @@ app.layout = html.Div(
             dbc.Col(dbc.CardBody(
                         [
                         dbc.Button(
-                            'Creators',
-                            id='collapse-button',
-                            className='mb-3',
+                            'Additional Game Info',
+                            id='collapse-button-creators',
+                            className='d-grid gap-2 col-3 mx-auto',
                             color='primary',
                             n_clicks=0,
                         ),
                         dbc.Collapse(
-                            dbc.CardBody('No Data'),
-                            id='collapse-content',
-                            className='text-center',
-                            is_open=False,
-                        ),
-                    ], className='d-grid gap-2 col-6 mx-auto',
+                            dbc.Row(
+                                    [
+                                    dbc.Col(
+                                        dbc.CardBody('No Data',
+                                        id='collapse-content-creators',
+                                        className='text-center')),
+                                    dbc.Col(
+                                        dbc.CardBody('No Data',
+                                        id='collapse-content-types',
+                                        className='text-center')),
+                                    dbc.Col(
+                                        dbc.CardBody('No Data',
+                                        id='collapse-content-categories',
+                                        className='text-center')),
+                                    dbc.Col(
+                                        dbc.CardBody('No Data',
+                                        id='collapse-content-mechanics',
+                                        className='text-center')),
+                                    ]
+                                ), id='collapse', is_open=False
+                            )
+                        ], className='d-grid gap-2'
+                    )
                 )
-            ),
-            dbc.Col(dbc.CardBody(
-                                [html.H6('Types'),
-                                html.H5('No Data')],
-                                id='types',
-                                className='text-center'
-                            )
-                        ),
-             dbc.Col(dbc.CardBody(
-                                [html.H6('Categories'),
-                                html.H5('No Data')],
-                                id='categories',
-                                className='text-center'
-                            )
-                        ),
-            dbc.Col(dbc.CardBody(
-                                [html.H6('Mechanics'),
-                                html.H5('No Data')],
-                                id='mechanics',
-                                className='text-center'
-                            )
-                        )
-                    ], className='wrapper'
-                ),
+            ], className='wrapper'
+        ),
         dbc.Row(
             [
              dbc.Col(dbc.Card(dbc.CardBody(
@@ -477,9 +472,9 @@ def update_date_language(game):
 
 
 @app.callback(
-    Output(component_id='collapse-content', component_property='is_open'),
-    Input(component_id='collapse-button', component_property='n_clicks'),
-    State(component_id='collapse-content', component_property='is_open')
+    Output(component_id='collapse', component_property='is_open'),
+    Input(component_id='collapse-button-creators', component_property='n_clicks'),
+    State(component_id='collapse', component_property='is_open')
 )
 def toggle_collapse(n, is_open):
     if n:
@@ -488,7 +483,7 @@ def toggle_collapse(n, is_open):
 
 
 @app.callback(
-    Output('collapse-content', 'children'),
+    Output('collapse-content-creators', 'children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_creators(game):
@@ -521,8 +516,9 @@ def update_creators(game):
 
     return creators
 
+
 @app.callback(
-    Output(component_id='types', component_property='children'),
+    Output('collapse-content-types', 'children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_types(game):
@@ -549,7 +545,7 @@ def update_types(game):
 
 
 @app.callback(
-    Output(component_id='categories', component_property='children'),
+    Output(component_id='collapse-content-categories', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_categories(game):
@@ -576,7 +572,7 @@ def update_categories(game):
 
 
 @app.callback(
-    Output(component_id='mechanics', component_property='children'),
+    Output(component_id='collapse-content-mechanics', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_mechanics(game):
