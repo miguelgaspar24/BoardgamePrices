@@ -33,7 +33,7 @@ column_order = ['date', 'name', 'JogoNaMesa', 'Gameplay', 'JogarTabuleiro']
 master_df = master_df[column_order].sort_values(by='date')
 games = master_df['name'].sort_values().unique()
 stores_prop = {'JogoNaMesa': {'color': 'red',
-                              'url': 'https://jogonamesa.pt/P/home.cgi',
+                              'url': 'https://jogonamesa.pt/P/ficha.cgi?bgg_id=',
                               'favicon': 'https://jogonamesa.pt/img/favicon.ico'},
                'Gameplay': {'color': 'blue',
                             'url': 'https://gameplay.pt/pt/',
@@ -94,14 +94,16 @@ app.layout = html.Div(
                     html.Div(
                         children=[
                             html.Div(children='Store', className='menu-title'),
-                            dcc.Checklist(
+                            dbc.Checklist(
                                 options=[
                                         {'label': ' ' + store, 'value': store}
                                         for store in list(stores_prop.keys())
                                         ],
                                 value=list(stores_prop.keys()),
+                                input_checked_style={'backgroundColor': 'black', 'borderColor': 'black', 'borderWidth': 2},
+                                #label_checked_style={'color': 'green'},
                                 id='store-filter',
-                                className='checklist'
+                                className='checklist',
                             )
                         ]
                     ),
@@ -129,21 +131,24 @@ app.layout = html.Div(
                 [
 # ------------------------------------------ Game Cover -----------------------------------------------
                 dbc.Col(dbc.CardBody(
-                            [html.Img(
-                                id='game-cover-image',
-                                className='image',
-                                alt='Game Cover',
-                                src=''
-                                ),
-                                #dbc.Spinner(html.Div(id='loading-image'), color='warning')
-                                dcc.Loading(html.Div(id='loading-image'),
-                                            type='graph',
-                                            color='firebrick',
-                                            fullscreen=True
-                                        )
-                                ]
-                            )
-                        ),
+                            [html.A([
+                                    html.Img(
+                                        id='game-cover-image',
+                                        className='image',
+                                        alt='Game Cover',
+                                        src=''
+                                        ),
+                                    #dbc.Spinner(html.Div(id='loading-image'), color='warning')
+                                    dcc.Loading(html.Div(id='loading-image'),
+                                                type='graph',
+                                                color='firebrick',
+                                                fullscreen=True
+                                            )
+                                    ], id='bgg-game-url', href='https://boardgamegeek.com/', target='_blank' # target=_blank makes URLs open in a new browser tab
+                                )
+                            ]
+                        )
+                    ),
 # ----------------------------- Game BGG Rating, Votes, and Complexity --------------------------------
                 dbc.Col(dbc.CardBody(
                         [html.H6('Average Rating'),
@@ -194,7 +199,7 @@ app.layout = html.Div(
                                 'Additional Game Info',
                                 id='collapse-button',
                                 className='d-grid gap-2 col-3 mx-auto',
-                                color='primary',
+                                color='dark',
                                 n_clicks=0,
                             ),
 # ----------------------------------- Collapsible Area Content -----------------------------------------
@@ -299,13 +304,14 @@ def update_date_picker_range(game):
 # ----------------------------------------- Game Cover ------------------------------------------------
 @app.callback(
     Output(component_id='game-cover-image', component_property='src'),
+    Output(component_id='bgg-game-url', component_property='href'),
     Output(component_id='loading-image', component_property='children'),
     Input(component_id='game-filter', component_property='value')
 )
 def update_game_image(game):
 
     if game is None:
-        return ('', '')
+        return ('', '', '')
 
     #root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
     global root_path
@@ -313,13 +319,16 @@ def update_game_image(game):
     game_props = bgg_spyder.get_game_properties(root_path, game)
 
     image_url = game_props['game_image']
+    game_url = game_props['url']
+
+    #bgg_game_page = html.A(href=game_url)
 
     image_content = requests.get(image_url)
     image_display = Image.open(BytesIO(image_content.content))
 
     image_source = image_display
 
-    return (image_source, '')
+    return (image_source, game_url, '')
 
 
 # ---------------------------- Game BGG Rating, Number of Votes, and Complexity -----------------------
@@ -578,18 +587,29 @@ def update_mechanics(game):
 )
 def update_min_max_cards(game):
 
+    try:
+        global root_path
+
+        game_props = bgg_spyder.get_game_properties(root_path, game)
+
+        game_url = game_props['url']
+        game_id = game_url.split('/')[4]
+    
+    except TypeError:
+        game_id = ''
+
     filtered_data = master_df.query('name == @game')
 
     min_values = [filtered_data[store].min() for store in list(stores_prop.keys())]
     min_idx = min_values.index(min(min_values))
     min_store = list(stores_prop.keys())[min_idx]
-    min_site = stores_prop[min_store]['url']
+    min_site = stores_prop[min_store]['url'] + game_id if min_store == 'JogoNaMesa' else stores_prop[min_store]['url']
     min_card_value = 'No Data' if math.isnan(min(min_values)) else '{:.2f}'.format(min(min_values)) + '€'
 
     max_values = [filtered_data[store].max() for store in list(stores_prop.keys())]
     max_idx = max_values.index(max(max_values))
     max_store = list(stores_prop.keys())[max_idx]
-    max_site = stores_prop[max_store]['url']
+    max_site = stores_prop[max_store]['url'] + game_id if max_store == 'JogoNaMesa' else stores_prop[max_store]['url']
     max_card_value = 'No Data' if math.isnan(max(max_values)) else '{:.2f}'.format(max(max_values)) + '€'
 
     low_card = html.Div(
@@ -598,6 +618,7 @@ def update_min_max_cards(game):
                      dbc.Button(children=[html.Img(src=stores_prop[min_store]['favicon']), ' ' + min_store],
                                 outline=False,
                                 href=min_site,
+                                target='_blank',
                                 className='card-button'
                                 )],
                     id='card-lowest',
@@ -610,6 +631,7 @@ def update_min_max_cards(game):
                      dbc.Button(children=[html.Img(src=stores_prop[max_store]['favicon']), ' ' + max_store],
                                 outline=False,
                                 href=max_site,
+                                target='_blank',
                                 className='card-button'
                                 )],
                     id='card-highest',
@@ -654,7 +676,7 @@ def update_charts(game, stores, start_date, end_date):
                           'y': filtered_data[store],
                           'type': 'scatter',
                           'name': store,
-                          'line': {'color': stores_prop[store]['color']},
+                          'line': {'color': stores_prop[store]['color'], 'width': 3},
                           'hovertemplate': '%{y:.2f}€'#<extra></extra>'
                           },
                         1,
