@@ -56,7 +56,6 @@ def main(custom_logger, savepath):
 
 	temp_merge1 = table1.merge(table2, on='name', how='left')
 	full_table = temp_merge1.merge(table3, on='name', how='left')
-	full_table = table1.merge(table2, on='name', how='left')
 
 	today = dt.datetime.today()
 	custom_logger.info("Today's menu, in separate main functions: " + today.strftime("%Y-%m-%d %H:%M"))
