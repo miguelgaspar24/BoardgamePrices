@@ -11,9 +11,9 @@ body {
 }
 
 .card-button {
-  background-color: rgb(232, 220, 202);
-  color: #000000;
-  border-color: #1e6c84;
+  background-color: rgb(55, 55, 55);
+  color: #ffffff;
+  border-color: #ebab2a;
   border-width: 3px
 }
 
@@ -52,7 +52,7 @@ body {
 .image {
   /*margin-top: 30px;*/
   margin-left: 80px;
-  max-height: 200px;
+  max-height: 512px;
   padding-right: 10px;
   max-width: 1024px
 }

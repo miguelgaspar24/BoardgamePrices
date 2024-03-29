@@ -31,7 +31,7 @@ for year in os.listdir(root_path):
 # Set some constants needed later
 column_order = ['date', 'name', 'JogoNaMesa', 'Gameplay', 'JogarTabuleiro']
 master_df = master_df[column_order].sort_values(by='date')
-games = master_df['name'].sort_values().unique()
+current_games = master_df['name'].sort_values().unique()
 stores_prop = {'JogoNaMesa': {'color': 'red',
                               'url': 'https://jogonamesa.pt/P/ficha.cgi?bgg_id=',
                               'favicon': 'https://jogonamesa.pt/img/favicon.ico'},
@@ -79,14 +79,14 @@ app.layout = html.Div(
                             dcc.Dropdown(
                                 options=[
                                         {'label': game, 'value': game}
-                                        for game in games
+                                        for game in current_games
                                         ],
                                 id='game-filter',
                                 clearable=False,
                                 searchable=True,
                                 className='dropdown',
                                 placeholder='Select a game',
-                                optionHeight=50
+                                optionHeight=80
                             )
                         ]
                     ),
@@ -100,7 +100,7 @@ app.layout = html.Div(
                                         for store in list(stores_prop.keys())
                                         ],
                                 value=list(stores_prop.keys()),
-                                input_checked_style={'backgroundColor': 'black', 'borderColor': 'black', 'borderWidth': 2},
+                                input_checked_style={'backgroundColor': '#373737', 'borderColor': '#ebab2a', 'borderWidth': 2},
                                 #label_checked_style={'color': 'green'},
                                 id='store-filter',
                                 className='checklist',
@@ -198,7 +198,7 @@ app.layout = html.Div(
                             dbc.Button(
                                 'Additional Game Info',
                                 id='collapse-button',
-                                className='d-grid gap-2 col-3 mx-auto',
+                                className='d-grid gap-2 col-3 mx-auto card-button',
                                 color='dark',
                                 n_clicks=0,
                             ),
