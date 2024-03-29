@@ -1,8 +1,10 @@
 
+from datetime import timedelta
 import math
 import os
 
-from dash import Dash, Input, Output, State, dcc, html
+from dash import Dash, dash_table, dcc, html, Input, Output, State
+from dash.dash_table.Format import Format, Scheme, Sign, Symbol
 import dash_bootstrap_components as dbc
 import pandas as pd
 from plotly.subplots import make_subplots
@@ -31,7 +33,6 @@ for year in os.listdir(root_path):
 # Set some constants needed later
 column_order = ['date', 'name', 'JogoNaMesa', 'Gameplay', 'JogarTabuleiro']
 master_df = master_df[column_order].sort_values(by='date')
-current_games = master_df['name'].sort_values().unique()
 stores_prop = {'JogoNaMesa': {'color': 'red',
                               'url': 'https://jogonamesa.pt/P/ficha.cgi?bgg_id=',
                               'favicon': 'https://jogonamesa.pt/img/favicon.ico'},
@@ -42,6 +43,41 @@ stores_prop = {'JogoNaMesa': {'color': 'red',
                                   'url': 'https://jogartabuleiro.pt/',
                                   'favicon': 'https://jogartabuleiro.pt/wp-content/uploads/2018/06/logo_favicon_M9H_icon.ico'}
                }
+
+current_date = master_df.date.max().strftime('%Y-%m-%d')
+previous_date = (master_df.date.max() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+current_prices = master_df[master_df['date']==current_date]
+previous_prices = master_df[master_df['date']==previous_date]
+
+diff_prices = pd.merge(previous_prices, current_prices, on='name', how='inner', suffixes=('_previous', '_current'))
+
+diff_prices['JogoNaMesa_abs_diff'] = diff_prices['JogoNaMesa_current'] - diff_prices['JogoNaMesa_previous']
+diff_prices['Gameplay_abs_diff'] = diff_prices['Gameplay_current'] - diff_prices['Gameplay_previous']
+diff_prices['JogarTabuleiro_abs_diff'] = diff_prices['JogarTabuleiro_current'] - diff_prices['JogarTabuleiro_previous']
+
+diff_prices['JogoNaMesa_perc_diff'] = diff_prices['JogoNaMesa_abs_diff'] / diff_prices['JogoNaMesa_previous']
+diff_prices['Gameplay_perc_diff'] = diff_prices['Gameplay_abs_diff'] / diff_prices['Gameplay_previous']
+diff_prices['JogarTabuleiro_perc_diff'] = diff_prices['JogarTabuleiro_abs_diff'] / diff_prices['JogarTabuleiro_previous']
+
+diff_prices.drop(columns=['date_previous',
+                          'date_current',
+                          'JogoNaMesa_previous',
+                          'JogoNaMesa_current',
+                          'Gameplay_previous',
+                          'Gameplay_current',
+                          'JogarTabuleiro_previous',
+                          'JogarTabuleiro_current']
+                          , inplace=True
+            )
+
+#diff_prices.rename(columns={'JogoNaMesa_abs_diff': 'JogoNaMesa',
+#                            'Gameplay_abs_diff': 'Gameplay',
+#                            'JogarTabuleiro_abs_diff': 'JogarTabuleiro'},
+#                   inplace=True
+#                )
+
+current_games = master_df[master_df['date']==current_date]['name'].sort_values().unique()
 
 # Set the page stylesheet and start the actual dashboard app
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
@@ -270,8 +306,65 @@ app.layout = html.Div(
                         )
                     ],
                     className='wrapper'
-                )
-        ]
+            ),
+
+
+            html.Div([
+                dash_table.DataTable(
+                            id='data-table',
+                            data=diff_prices.to_dict('records'),
+                            columns=[
+                                {'name': 'Game', 'id': 'name', 'type': 'text'},
+                                {'name': 'JogoNaMesa (€)', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                {'name': 'Gameplay (€)', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                {'name': 'JogarTabuleiro (€)', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                {'name': 'JogoNaMesa (%)', 'id': 'JogoNaMesa_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'Gameplay (%)', 'id': 'Gameplay_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'JogarTabuleiro (%)', 'id': 'JogarTabuleiro_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)}
+                            ],
+                            #virtualization=True,
+                            #fixed_rows={'headers': True},
+                            sort_action='native',
+                            sort_mode='multi',
+                            page_action='native',
+                            page_current=0,
+                            page_size=10,
+                            tooltip_data=[
+                                    {
+                                     column: {'value': str(value), 'type': 'markdown'}
+                                     for column, value in row.items() if column in ['name'] and len(value) > 21
+                                    } for row in diff_prices.to_dict('records')
+                                ],
+                            tooltip_delay=0,
+                            tooltip_duration=None,
+                            style_cell={'minWidth': 95, 'maxWidth': 95, 'width': 95, 'overflow': 'hidden', 'textOverflow': 'ellipsis', 'textAlign': 'center',
+                                        #'whiteSpace': 'normal', 'height': 'auto',
+                                        },
+                            style_cell_conditional=[
+                                            {'if': {'column_id': 'name'},
+                                            'width': '20%'}
+                                            ],
+                            style_data={
+                                'backgroundColor': 'rgb(50, 50, 50)',
+                                'color': 'white',
+                                'border': '1px solid #ebab2a'
+                            },
+                            style_data_conditional=[
+                                            {'if': {'column_id': 'name'},
+                                            'textAlign': 'right'}
+                                            ],
+                            style_header={
+                                'backgroundColor': 'rgb(30, 30, 30)',
+                                'color': 'white',
+                                'border': '2px solid #ebab2a',
+                                'height': '40px',
+                                'fontWeight': 'bold',
+                                'fontSize': 15
+                            }
+                        )
+                ], className='table'
+            )
+    ]
 )
 
 
