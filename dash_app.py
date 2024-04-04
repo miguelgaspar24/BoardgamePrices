@@ -44,13 +44,15 @@ stores_prop = {'JogoNaMesa': {'color': 'red',
                                   'favicon': 'https://jogartabuleiro.pt/wp-content/uploads/2018/06/logo_favicon_M9H_icon.ico'}
                }
 
-current_date = master_df.date.max().strftime('%Y-%m-%d')
-previous_date = (master_df.date.max() - timedelta(days=1)).strftime('%Y-%m-%d')
+sorted_dates = sorted(master_df['date'].unique(), reverse=True)
 
-current_prices = master_df[master_df['date']==current_date]
+most_recent_date = sorted_dates[0]
+previous_date = sorted_dates[1]
+
+most_recent_prices = master_df[master_df['date']==most_recent_date]
 previous_prices = master_df[master_df['date']==previous_date]
 
-diff_prices = pd.merge(previous_prices, current_prices, on='name', how='inner', suffixes=('_previous', '_current'))
+diff_prices = pd.merge(previous_prices, most_recent_prices, on='name', how='inner', suffixes=('_previous', '_current'))
 
 diff_prices['JogoNaMesa_abs_diff'] = diff_prices['JogoNaMesa_current'] - diff_prices['JogoNaMesa_previous']
 diff_prices['Gameplay_abs_diff'] = diff_prices['Gameplay_current'] - diff_prices['Gameplay_previous']
@@ -60,6 +62,9 @@ diff_prices['JogoNaMesa_perc_diff'] = diff_prices['JogoNaMesa_abs_diff'] / diff_
 diff_prices['Gameplay_perc_diff'] = diff_prices['Gameplay_abs_diff'] / diff_prices['Gameplay_previous']
 diff_prices['JogarTabuleiro_perc_diff'] = diff_prices['JogarTabuleiro_abs_diff'] / diff_prices['JogarTabuleiro_previous']
 
+diff_prices['max_abs_diff'] = diff_prices[['JogoNaMesa_abs_diff', 'Gameplay_abs_diff', 'JogarTabuleiro_abs_diff']].min(axis=1)
+diff_prices.sort_values(by='max_abs_diff', ascending=True, inplace=True)
+
 diff_prices.drop(columns=['date_previous',
                           'date_current',
                           'JogoNaMesa_previous',
@@ -67,17 +72,13 @@ diff_prices.drop(columns=['date_previous',
                           'Gameplay_previous',
                           'Gameplay_current',
                           'JogarTabuleiro_previous',
-                          'JogarTabuleiro_current']
-                          , inplace=True
+                          'JogarTabuleiro_current',
+                          'max_abs_diff'
+                        ],
+                inplace=True
             )
 
-#diff_prices.rename(columns={'JogoNaMesa_abs_diff': 'JogoNaMesa',
-#                            'Gameplay_abs_diff': 'Gameplay',
-#                            'JogarTabuleiro_abs_diff': 'JogarTabuleiro'},
-#                   inplace=True
-#                )
-
-current_games = master_df[master_df['date']==current_date]['name'].sort_values().unique()
+current_games = master_df[master_df['date']==most_recent_date]['name'].sort_values().unique()
 
 # Set the page stylesheet and start the actual dashboard app
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
@@ -315,12 +316,12 @@ app.layout = html.Div(
                             data=diff_prices.to_dict('records'),
                             columns=[
                                 {'name': 'Game', 'id': 'name', 'type': 'text'},
-                                {'name': 'JogoNaMesa (€)', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
-                                {'name': 'Gameplay (€)', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
-                                {'name': 'JogarTabuleiro (€)', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
-                                {'name': 'JogoNaMesa (%)', 'id': 'JogoNaMesa_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
-                                {'name': 'Gameplay (%)', 'id': 'Gameplay_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
-                                {'name': 'JogarTabuleiro (%)', 'id': 'JogarTabuleiro_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)}
+                                {'name': 'JNM (€)', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                {'name': 'JNM (%)', 'id': 'JogoNaMesa_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'GP (€)', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                {'name': 'GP (%)', 'id': 'Gameplay_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'JT (€)', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                {'name': 'JT (%)', 'id': 'JogarTabuleiro_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)}
                             ],
                             #virtualization=True,
                             #fixed_rows={'headers': True},
@@ -329,26 +330,33 @@ app.layout = html.Div(
                             page_action='native',
                             page_current=0,
                             page_size=10,
+                            tooltip_header={col: col.split('_')[0] for col in diff_prices.columns if col not in ['name']},
                             tooltip_data=[
                                     {
                                      column: {'value': str(value), 'type': 'markdown'}
-                                     for column, value in row.items() if column in ['name'] and len(value) > 21
+                                     for column, value in row.items() if column in ['name'] and len(value) > 32
                                     } for row in diff_prices.to_dict('records')
                                 ],
                             tooltip_delay=0,
                             tooltip_duration=None,
-                            style_cell={'minWidth': 95, 'maxWidth': 95, 'width': 95, 'overflow': 'hidden', 'textOverflow': 'ellipsis', 'textAlign': 'center',
-                                        #'whiteSpace': 'normal', 'height': 'auto',
+                            style_cell={'minWidth': 95,
+                                        'maxWidth': 95,
+                                        'width': 95,
+                                        #'overflow': 'hidden',
+                                        #'textOverflow': 'ellipsis',
+                                        'whiteSpace': 'normal',
+                                        'height': 'auto',
+                                        'textAlign': 'center'
                                         },
                             style_cell_conditional=[
                                             {'if': {'column_id': 'name'},
-                                            'width': '20%'}
+                                            'width': '30%'}
                                             ],
                             style_data={
                                 'backgroundColor': 'rgb(50, 50, 50)',
                                 'color': 'white',
                                 'border': '1px solid #ebab2a'
-                            },
+                                },
                             style_data_conditional=[
                                             {'if': {'column_id': 'name'},
                                             'textAlign': 'right'}
@@ -360,7 +368,17 @@ app.layout = html.Div(
                                 'height': '40px',
                                 'fontWeight': 'bold',
                                 'fontSize': 15
-                            }
+                                },
+                            css=[
+                                {
+                                'selector': '.dash-table-tooltip',
+                                'rule': 'background-color: grey; \
+                                        font-family: monospace; \
+                                        color: white; \
+                                        text-align: center; \
+                                        border: 3px solid #ebab2a; width: 50px; max-width: 50px'
+                                }
+                            ]
                         )
                 ], className='table'
             )
