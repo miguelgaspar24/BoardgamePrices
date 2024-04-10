@@ -63,7 +63,7 @@ diff_prices['Gameplay_perc_diff'] = diff_prices['Gameplay_abs_diff'] / diff_pric
 diff_prices['JogarTabuleiro_perc_diff'] = diff_prices['JogarTabuleiro_abs_diff'] / diff_prices['JogarTabuleiro_previous']
 
 diff_prices['max_abs_diff'] = diff_prices[['JogoNaMesa_abs_diff', 'Gameplay_abs_diff', 'JogarTabuleiro_abs_diff']].min(axis=1)
-diff_prices.sort_values(by='max_abs_diff', ascending=True, inplace=True)
+diff_prices.sort_values(by=['max_abs_diff', 'name'], ascending=True, inplace=True)
 
 diff_prices.drop(columns=['date_previous',
                           'date_current',
@@ -158,11 +158,124 @@ app.layout = html.Div(
                             )
                         ]
                     )
-                ],
-                className='menu'
+                ], className='menu'
             ),
 # -----------------------------------------------------------------------------------------------------
-#                                     3. GAME INFO EXPOSED ROW
+#                                 3. DAILY GAME PRICE OSCILATIONS
+# -----------------------------------------------------------------------------------------------------
+            html.Div([
+                html.H3('Top 10 Price Drops', className='text-center'),
+                dash_table.DataTable(
+                            id='data-table',
+                            data=diff_prices.head(10).to_dict('records'),
+                            columns=[
+                                {'name': 'Game', 'id': 'name', 'type': 'text'},
+                                {'name': 'JNM', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                #{'name': 'JNM (%)', 'id': 'JogoNaMesa_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'GP', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                #{'name': 'GP (%)', 'id': 'Gameplay_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'JT', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                #{'name': 'JT (%)', 'id': 'JogarTabuleiro_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)}
+                            ],
+                            #virtualization=True,
+                            #fixed_rows={'headers': True},
+                            sort_action='native',
+                            sort_mode='multi',
+                            page_action='native',
+                            page_current=0,
+                            page_size=5,
+                            tooltip_header={col: col.split('_')[0] for col in diff_prices.columns if col not in ['name']},
+                            tooltip_data=[
+                                    {
+                                     column: {'value': str(value), 'type': 'markdown'}
+                                     for column, value in row.items() if column in ['name'] and len(value) > 32
+                                    } for row in diff_prices.to_dict('records')
+                                ],
+                            tooltip_delay=0,
+                            tooltip_duration=None,
+                            style_cell={'minWidth': 95,
+                                        'maxWidth': 95,
+                                        'width': 95,
+                                        #'overflow': 'hidden',
+                                        #'textOverflow': 'ellipsis',
+                                        'whiteSpace': 'normal',
+                                        'height': 'auto',
+                                        'textAlign': 'center',
+                                        'border': '1.5px solid #4682B4'
+                                        },
+                            style_cell_conditional=[
+                                            {'if': {'column_id': 'name'},
+                                            'width': '30%'}
+                                            ],
+                            style_data={
+                                'backgroundColor': 'white',
+                                'color': 'black'
+                                },
+                            style_data_conditional=[
+                                            {'if': {'column_id': 'name'},
+                                            'textAlign': 'right'},
+                                            {'if': {'row_index': 'odd'},
+                                            'backgroundColor': '#DCDCDC'},
+                                            {'if': {'filter_query': '{JogoNaMesa_abs_diff} < 0',
+                                                    'column_id': 'JogoNaMesa_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#03C04A'},
+                                            {'if': {'filter_query': '{JogoNaMesa_abs_diff} = 0',
+                                                    'column_id': 'JogoNaMesa_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#FCD12A'},
+                                            {'if': {'filter_query': '{JogoNaMesa_abs_diff} > 0',
+                                                    'column_id': 'JogoNaMesa_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#EA3C53'},
+                                            {'if': {'filter_query': '{Gameplay_abs_diff} < 0',
+                                                    'column_id': 'Gameplay_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#03C04A'},
+                                            {'if': {'filter_query': '{Gameplay_abs_diff} = 0',
+                                                    'column_id': 'Gameplay_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#FCD12A'},
+                                            {'if': {'filter_query': '{Gameplay_abs_diff} > 0',
+                                                    'column_id': 'Gameplay_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#EA3C53'},
+                                            {'if': {'filter_query': '{JogarTabuleiro_abs_diff} < 0',
+                                                    'column_id': 'JogarTabuleiro_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#03C04A'},
+                                            {'if': {'filter_query': '{JogarTabuleiro_abs_diff} = 0',
+                                                    'column_id': 'JogarTabuleiro_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#FCD12A'},
+                                            {'if': {'filter_query': '{JogarTabuleiro_abs_diff} > 0',
+                                                    'column_id': 'JogarTabuleiro_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#EA3C53'}
+                                            ],
+                            style_header={
+                                'backgroundColor': '#3C3C3C',
+                                'color': 'white',
+                                'height': '40px',
+                                'fontWeight': 'bold',
+                                'fontSize': 15,
+                                'border': '1.5px solid lightgray'
+                                },
+                            css=[
+                                {
+                                'selector': '.dash-table-tooltip',
+                                'rule': 'background-color: #3C3C3C; \
+                                        font-family: monospace; \
+                                        color: white; \
+                                        text-align: center; \
+                                        border: 2px solid #EBAB2A'
+                                }
+                            ]
+                        )
+                ], className='wrapper'
+            ),
+# -----------------------------------------------------------------------------------------------------
+#                                     4. GAME INFO EXPOSED ROW
 # -----------------------------------------------------------------------------------------------------
             dbc.Row(
                 [
@@ -225,7 +338,7 @@ app.layout = html.Div(
                     ], className='wrapper'
             ),
 # -----------------------------------------------------------------------------------------------------
-#                              4. GAME INFO COLLAPSIBLE CONTENT
+#                              5. GAME INFO COLLAPSIBLE CONTENT
 # -----------------------------------------------------------------------------------------------------
             dbc.Row(
                 [
@@ -268,7 +381,117 @@ app.layout = html.Div(
                 ], className='wrapper'
             ),
 # -----------------------------------------------------------------------------------------------------
-#                                   5. HISTORICAL LOW-HIGH PRICES
+#                                   6. DAY-TO-DAY PRICE VARIATION
+# -----------------------------------------------------------------------------------------------------
+           html.Div([
+                html.H4('Price Variation', className='text-center'),
+                dash_table.DataTable(
+                            id='game-table',
+                            data=diff_prices.head(0).to_dict('records'),
+                            columns=[
+                                {'name': 'Game', 'id': 'name', 'type': 'text'},
+                                {'name': 'JNM', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                #{'name': 'JNM (%)', 'id': 'JogoNaMesa_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'GP', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                #{'name': 'GP (%)', 'id': 'Gameplay_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
+                                {'name': 'JT', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                                #{'name': 'JT (%)', 'id': 'JogarTabuleiro_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)}
+                            ],
+                            sort_action='native',
+                            sort_mode='multi',
+                            page_action='native',
+                            page_current=0,
+                            page_size=1,
+                            tooltip_header={col: col.split('_')[0] for col in diff_prices.columns if col not in ['name']},
+                            tooltip_data=[
+                                    {
+                                     column: {'value': str(value), 'type': 'markdown'}
+                                     for column, value in row.items() if column in ['name'] and len(value) > 32
+                                    } for row in diff_prices.to_dict('records')
+                                ],
+                            tooltip_delay=0,
+                            tooltip_duration=None,
+                            style_cell={'minWidth': 95,
+                                        'maxWidth': 95,
+                                        'width': 95,
+                                        'whiteSpace': 'normal',
+                                        'height': 'auto',
+                                        'textAlign': 'center',
+                                        'border': '1.5px solid #4682B4'
+                                        },
+                            style_cell_conditional=[
+                                            {'if': {'column_id': 'name'},
+                                            'width': '30%'}
+                                            ],
+                            style_data={
+                                'backgroundColor': 'white',
+                                'color': 'black'
+                                },
+                            style_data_conditional=[
+                                            {'if': {'column_id': 'name'},
+                                            'textAlign': 'right'},
+                                            {'if': {'row_index': 'odd'},
+                                            'backgroundColor': '#DCDCDC'},
+                                            {'if': {'filter_query': '{JogoNaMesa_abs_diff} < 0',
+                                                    'column_id': 'JogoNaMesa_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#03C04A'},
+                                            {'if': {'filter_query': '{JogoNaMesa_abs_diff} = 0',
+                                                    'column_id': 'JogoNaMesa_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#FCD12A'},
+                                            {'if': {'filter_query': '{JogoNaMesa_abs_diff} > 0',
+                                                    'column_id': 'JogoNaMesa_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#EA3C53'},
+                                            {'if': {'filter_query': '{Gameplay_abs_diff} < 0',
+                                                    'column_id': 'Gameplay_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#03C04A'},
+                                            {'if': {'filter_query': '{Gameplay_abs_diff} = 0',
+                                                    'column_id': 'Gameplay_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#FCD12A'},
+                                            {'if': {'filter_query': '{Gameplay_abs_diff} > 0',
+                                                    'column_id': 'Gameplay_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#EA3C53'},
+                                            {'if': {'filter_query': '{JogarTabuleiro_abs_diff} < 0',
+                                                    'column_id': 'JogarTabuleiro_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#03C04A'},
+                                            {'if': {'filter_query': '{JogarTabuleiro_abs_diff} = 0',
+                                                    'column_id': 'JogarTabuleiro_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#FCD12A'},
+                                            {'if': {'filter_query': '{JogarTabuleiro_abs_diff} > 0',
+                                                    'column_id': 'JogarTabuleiro_abs_diff'},
+                                            'color': 'black',
+                                            'backgroundColor': '#EA3C53'}
+                                            ],
+                            style_header={
+                                'backgroundColor': '#3C3C3C',
+                                'color': 'white',
+                                'height': '40px',
+                                'fontWeight': 'bold',
+                                'fontSize': 15,
+                                'border': '1.5px solid lightgray'
+                                },
+                            css=[
+                                {
+                                'selector': '.dash-table-tooltip',
+                                'rule': 'background-color: #3C3C3C; \
+                                        font-family: monospace; \
+                                        color: white; \
+                                        text-align: center; \
+                                        border: 2px solid #EBAB2A'
+                                }
+                            ]
+                        )
+                ], className='wrapper'
+            ),
+# -----------------------------------------------------------------------------------------------------
+#                                   7. HISTORICAL LOW-HIGH PRICES
 # -----------------------------------------------------------------------------------------------------
             dbc.Row(
                 [
@@ -290,11 +513,10 @@ app.layout = html.Div(
                                 )
                             )
                     )
-                ],
-                className='wrapper'
+                ], className='wrapper'
             ),
 # -----------------------------------------------------------------------------------------------------
-#                                       6. PRICE GRAPH OVER TIME
+#                                       8. PRICE GRAPH OVER TIME
 # -----------------------------------------------------------------------------------------------------
             html.Div(
                 children=[
@@ -305,82 +527,7 @@ app.layout = html.Div(
                                     ),
                                     className='card-graph'
                         )
-                    ],
-                    className='wrapper'
-            ),
-
-
-            html.Div([
-                dash_table.DataTable(
-                            id='data-table',
-                            data=diff_prices.to_dict('records'),
-                            columns=[
-                                {'name': 'Game', 'id': 'name', 'type': 'text'},
-                                {'name': 'JNM (€)', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
-                                {'name': 'JNM (%)', 'id': 'JogoNaMesa_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
-                                {'name': 'GP (€)', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
-                                {'name': 'GP (%)', 'id': 'Gameplay_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)},
-                                {'name': 'JT (€)', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
-                                {'name': 'JT (%)', 'id': 'JogarTabuleiro_perc_diff', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.percentage, sign=Sign.positive)}
-                            ],
-                            #virtualization=True,
-                            #fixed_rows={'headers': True},
-                            sort_action='native',
-                            sort_mode='multi',
-                            page_action='native',
-                            page_current=0,
-                            page_size=10,
-                            tooltip_header={col: col.split('_')[0] for col in diff_prices.columns if col not in ['name']},
-                            tooltip_data=[
-                                    {
-                                     column: {'value': str(value), 'type': 'markdown'}
-                                     for column, value in row.items() if column in ['name'] and len(value) > 32
-                                    } for row in diff_prices.to_dict('records')
-                                ],
-                            tooltip_delay=0,
-                            tooltip_duration=None,
-                            style_cell={'minWidth': 95,
-                                        'maxWidth': 95,
-                                        'width': 95,
-                                        #'overflow': 'hidden',
-                                        #'textOverflow': 'ellipsis',
-                                        'whiteSpace': 'normal',
-                                        'height': 'auto',
-                                        'textAlign': 'center'
-                                        },
-                            style_cell_conditional=[
-                                            {'if': {'column_id': 'name'},
-                                            'width': '30%'}
-                                            ],
-                            style_data={
-                                'backgroundColor': 'rgb(50, 50, 50)',
-                                'color': 'white',
-                                'border': '1px solid #ebab2a'
-                                },
-                            style_data_conditional=[
-                                            {'if': {'column_id': 'name'},
-                                            'textAlign': 'right'}
-                                            ],
-                            style_header={
-                                'backgroundColor': 'rgb(30, 30, 30)',
-                                'color': 'white',
-                                'border': '2px solid #ebab2a',
-                                'height': '40px',
-                                'fontWeight': 'bold',
-                                'fontSize': 15
-                                },
-                            css=[
-                                {
-                                'selector': '.dash-table-tooltip',
-                                'rule': 'background-color: grey; \
-                                        font-family: monospace; \
-                                        color: white; \
-                                        text-align: center; \
-                                        border: 3px solid #ebab2a; width: 50px; max-width: 50px'
-                                }
-                            ]
-                        )
-                ], className='table'
+                    ], className='wrapper'
             )
     ]
 )
@@ -409,7 +556,21 @@ def update_date_picker_range(game):
     return (max_date_allowed, end_date)
 
 # -----------------------------------------------------------------------------------------------------
-#                                     3. GAME INFO EXPOSED ROW
+#                                 3. DAILY GAME PRICE OSCILATIONS
+# -----------------------------------------------------------------------------------------------------
+
+@app.callback(
+    Output(component_id='data-table', component_property='data'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_data_table(game):
+    
+    table_data = diff_prices.head(10).to_dict('records')
+
+    return (table_data)
+
+# -----------------------------------------------------------------------------------------------------
+#                                     4. GAME INFO EXPOSED ROW
 # -----------------------------------------------------------------------------------------------------
 
 # ----------------------------------------- Game Cover ------------------------------------------------
@@ -517,7 +678,7 @@ def update_player_count(game):
     return player_count
 
 
-# ------------------------------- Release Year and Language Dependende --------------------------------
+# ------------------------------- Release Year and Language Dependence --------------------------------
 @app.callback(
     Output(component_id='date-language', component_property='children'),
     Input(component_id='game-filter', component_property='value')
@@ -553,7 +714,7 @@ def update_date_language(game):
     return year_published
 
 # -----------------------------------------------------------------------------------------------------
-#                              4. GAME INFO COLLAPSIBLE CONTENT
+#                              5. GAME INFO COLLAPSIBLE CONTENT
 # -----------------------------------------------------------------------------------------------------
 
 # -------------------------- Open and Close Collapsible Element  -------------------------------------
@@ -688,7 +849,22 @@ def update_mechanics(game):
     return mechanics
 
 # -----------------------------------------------------------------------------------------------------
-#                                   5. HISTORICAL LOW-HIGH PRICES
+#                                   6. DAY-TO-DAY PRICE VARIATION
+# -----------------------------------------------------------------------------------------------------
+
+@app.callback(
+    Output(component_id='game-table', component_property='data'),
+    Input(component_id='game-filter', component_property='value')
+)
+def update_game_table(game):
+    
+    filtered_data = diff_prices.query('name == @game')
+    table_data = filtered_data.to_dict('records')
+
+    return (table_data)
+
+# -----------------------------------------------------------------------------------------------------
+#                                   7. HISTORICAL LOW-HIGH PRICES
 # -----------------------------------------------------------------------------------------------------
 
 @app.callback(
@@ -752,7 +928,7 @@ def update_min_max_cards(game):
     return (low_card, high_card)
 
 # -----------------------------------------------------------------------------------------------------
-#                                       6. PRICE GRAPH OVER TIME
+#                                       8. PRICE GRAPH OVER TIME
 # -----------------------------------------------------------------------------------------------------
 
 @app.callback(

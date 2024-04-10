@@ -11,9 +11,9 @@ body {
 }
 
 .card-button {
-  background-color: rgb(55, 55, 55);
-  color: #ffffff;
-  border-color: #ebab2a;
+  background-color: #3C3C3C;
+  color: #FFFFFF;
+  border-color: #EBAB2A;
   border-width: 3px
 }
 
@@ -87,12 +87,6 @@ body {
 .Select--single>.Select-control .Select-value,
 .Select-placeholder {
   line-height: 48px
-}
-
-.table {
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 1024px
 }
 
 .text-center {
