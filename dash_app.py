@@ -109,6 +109,7 @@ app.layout = html.Div(
 # -----------------------------------------------------------------------------------------------------
             html.Div(
                 children=[
+# --------------------------------------- Listing Mode Selector ---------------------------------------
                     html.Div(
                         children=[
                             html.Div(children='Mode', className='menu-title'),
@@ -129,14 +130,14 @@ app.layout = html.Div(
                                         {'label': game, 'value': game}
                                         for game in current_games
                                         ],
+                                value='Last Will',
                                 id='game-filter',
                                 clearable=False,
                                 searchable=True,
-                                className='dropdown',
                                 placeholder='Select a game',
                                 optionHeight=80
                             )
-                        ]
+                        ], style={'width': '250px'}
                     ),
 # -------------------------------------- Store Checklist Selector -------------------------------------
                     html.Div(
@@ -548,12 +549,11 @@ app.layout = html.Div(
 #                                               CALLBACKS                                                   #
 #############################################################################################################
 
-
-
 # -----------------------------------------------------------------------------------------------------
-#                                            1. MENU FILTERS
+#                                            2. MENU FILTERS
 # -----------------------------------------------------------------------------------------------------
 
+# --------------------------------------- Listing Mode Selector ---------------------------------------
 @app.callback(
     Output(component_id='game-filter', component_property='options'),
     Input(component_id='mode-select', component_property='value')
@@ -569,10 +569,8 @@ def update_game_filter(value):
 
     return current_games
 
-# -----------------------------------------------------------------------------------------------------
-#                                            2. MENU FILTERS
-# -----------------------------------------------------------------------------------------------------
 
+# ----------------------------------------- Date Range Selector ---------------------------------------
 @app.callback(
     Output(component_id='date-range', component_property='max_date_allowed'),
     Output(component_id='date-range', component_property='end_date'),
