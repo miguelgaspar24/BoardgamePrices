@@ -109,6 +109,17 @@ app.layout = html.Div(
 # -----------------------------------------------------------------------------------------------------
             html.Div(
                 children=[
+                    html.Div(
+                        children=[
+                            html.Div(children='Mode', className='menu-title'),
+                            dbc.RadioItems(options=[' Current', ' Legacy'],
+                                           value=' Current',
+                                           id='mode-select',
+                                           labelCheckedClassName='fw-bold text-dark',
+                                           inputCheckedClassName='border-0 bg-warning'
+                                        )
+                        ]
+                    ),
 # --------------------------------------- Game Selection Dropdown -------------------------------------
                     html.Div(
                         children=[
@@ -536,6 +547,27 @@ app.layout = html.Div(
 #############################################################################################################
 #                                               CALLBACKS                                                   #
 #############################################################################################################
+
+
+
+# -----------------------------------------------------------------------------------------------------
+#                                            1. MENU FILTERS
+# -----------------------------------------------------------------------------------------------------
+
+@app.callback(
+    Output(component_id='game-filter', component_property='options'),
+    Input(component_id='mode-select', component_property='value')
+)
+def update_game_filter(value):
+    
+    if value == ' Legacy':
+        current_games = master_df['name'].sort_values().unique()
+
+    if value == ' Current':
+        most_recent_date = sorted(master_df['date'].unique(), reverse=True)[0]
+        current_games = master_df[master_df['date']==most_recent_date]['name'].sort_values().unique()
+
+    return current_games
 
 # -----------------------------------------------------------------------------------------------------
 #                                            2. MENU FILTERS

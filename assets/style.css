@@ -22,6 +22,13 @@ body {
   margin-bottom: 24px;
 }
 
+.dropdown {
+  min-width: 200;
+  width: auto;
+  max-width: 200
+  
+}
+
 .header {
   background-color: #222222;
   height: 288px;
