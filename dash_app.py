@@ -1,18 +1,18 @@
 
-from datetime import timedelta
 import math
 import os
 
+import dash
 from dash import Dash, dash_table, dcc, html, Input, Output, State
 from dash.dash_table.Format import Format, Scheme, Sign, Symbol
 import dash_bootstrap_components as dbc
+from io import BytesIO
 import pandas as pd
+from PIL import Image
 from plotly.subplots import make_subplots
+import requests
 
 import bgg_spyder
-from PIL import Image
-import requests
-from io import BytesIO
 
 
 root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
@@ -83,7 +83,7 @@ current_games = master_df[master_df['date']==most_recent_date]['name'].sort_valu
 # Set the page stylesheet and start the actual dashboard app
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = Dash(__name__, external_stylesheets=external_stylesheets, use_pages=True)
 app.title = 'The Price is Right'
 
 #############################################################################################################
@@ -97,8 +97,8 @@ app.layout = html.Div(
 # -----------------------------------------------------------------------------------------------------
             html.Div(
                 children=[
-                    html.P(children='🃏♟️🎲🧩', className='header-emoji'),
                     html.H1(children='The Price is Right: Board Game Edition', className='header-title'),
+                    html.P(children='🃏♟️🎲🧩', className='header-emoji'),
                     html.P(children=('Track the prices of board games across online vendors to find the best deals at any given time'),
                         className='header-description')
                         ],
@@ -540,7 +540,7 @@ app.layout = html.Div(
                                     className='card-graph'
                         )
                     ], className='wrapper'
-            )
+            ), dash.page_container
     ]
 )
 
@@ -554,6 +554,7 @@ app.layout = html.Div(
 # -----------------------------------------------------------------------------------------------------
 
 # --------------------------------------- Listing Mode Selector ---------------------------------------
+
 @app.callback(
     Output(component_id='game-filter', component_property='options'),
     Input(component_id='mode-select', component_property='value')
@@ -574,16 +575,26 @@ def update_game_filter(value):
 @app.callback(
     Output(component_id='date-range', component_property='max_date_allowed'),
     Output(component_id='date-range', component_property='end_date'),
-    Input(component_id='game-filter', component_property='value')
+    Output(component_id='date-range', component_property='min_date_allowed'),
+    Output(component_id='date-range', component_property='start_date'),
+    Input(component_id='game-filter', component_property='value'),
+    Input(component_id='mode-select', component_property='value')
 )
-def update_date_picker_range(game):
+def update_date_picker_range(game, mode):
     
-    filtered_data = master_df.query('name == @game')
+    if mode == ' Legacy':
+        filtered_data = master_df.query('name == @game')
+
+    if mode == ' Current':
+        filtered_data = master_df.query('name == @game and date >= "2023-01-01"')
 
     max_date_allowed = filtered_data['date'].max().date()
     end_date = filtered_data['date'].max().date()
 
-    return (max_date_allowed, end_date)
+    min_date_allowed = filtered_data['date'].min().date()
+    start_date = filtered_data['date'].min().date()
+
+    return (max_date_allowed, end_date, min_date_allowed, start_date)
 
 # -----------------------------------------------------------------------------------------------------
 #                                 3. DAILY GAME PRICE OSCILATIONS
@@ -969,6 +980,7 @@ def update_min_max_cards(game):
     Input(component_id='date-range', component_property='end_date')
 )
 def update_charts(game, stores, start_date, end_date):
+
     filtered_data = master_df.query(
         'name == @game'
         ' and date >= @start_date and date <= @end_date'
