@@ -2,7 +2,7 @@
 import math
 import os
 
-import dash
+#import dash
 from dash import Dash, dash_table, dcc, html, Input, Output, State
 from dash.dash_table.Format import Format, Scheme, Sign, Symbol
 import dash_bootstrap_components as dbc
@@ -83,7 +83,7 @@ current_games = master_df[master_df['date']==most_recent_date]['name'].sort_valu
 # Set the page stylesheet and start the actual dashboard app
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 
-app = Dash(__name__, external_stylesheets=external_stylesheets, use_pages=True)
+app = Dash(__name__, external_stylesheets=external_stylesheets)#, use_pages=True)
 app.title = 'The Price is Right'
 
 #############################################################################################################
@@ -92,6 +92,16 @@ app.title = 'The Price is Right'
 
 app.layout = html.Div(
         children=[
+            dbc.NavbarSimple(
+                        children=[
+                            #dbc.NavItem(dbc.NavLink('Home', href='#')),
+                            dbc.NavItem(dbc.NavLink('FAQ', href='/faq'))
+                        ],
+                        brand='NavbarSimple',
+                        brand_href='#',
+                        color='#222222',
+                        dark=True,
+                    ),
 # -----------------------------------------------------------------------------------------------------
 #                                                1. HEADER
 # -----------------------------------------------------------------------------------------------------
@@ -176,7 +186,7 @@ app.layout = html.Div(
 #                                 3. DAILY GAME PRICE OSCILATIONS
 # -----------------------------------------------------------------------------------------------------
             html.Div([
-                html.H3('Top 10 Price Drops', className='text-center'),
+                html.H3('Top 10 Daily Price Drops', className='text-center'),
                 dash_table.DataTable(
                             id='data-table',
                             data=diff_prices.head(10).to_dict('records'),
@@ -289,6 +299,7 @@ app.layout = html.Div(
 # -----------------------------------------------------------------------------------------------------
 #                                     4. GAME INFO EXPOSED ROW
 # -----------------------------------------------------------------------------------------------------
+            html.H3('Game Details', className='text-center'),
             dbc.Row(
                 [
 # ------------------------------------------ Game Cover -----------------------------------------------
@@ -396,7 +407,7 @@ app.layout = html.Div(
 #                                   6. DAY-TO-DAY PRICE VARIATION
 # -----------------------------------------------------------------------------------------------------
            html.Div([
-                html.H4('Price Variation', className='text-center'),
+                html.H4('Daily Price Variation', className='text-center'),
                 dash_table.DataTable(
                             id='game-table',
                             data=diff_prices.head(0).to_dict('records'),
@@ -540,7 +551,8 @@ app.layout = html.Div(
                                     className='card-graph'
                         )
                     ], className='wrapper'
-            ), dash.page_container
+            ),
+        #dash.page_container
     ]
 )
 
@@ -602,13 +614,24 @@ def update_date_picker_range(game, mode):
 
 @app.callback(
     Output(component_id='data-table', component_property='data'),
-    Input(component_id='game-filter', component_property='value')
+    Output(component_id='data-table', component_property='columns'),
+    Input(component_id='game-filter', component_property='value'),
+    Input(component_id='store-filter', component_property='value')
 )
-def update_data_table(game):
+def update_data_table(game, stores):
     
     table_data = diff_prices.head(10).to_dict('records')
 
-    return (table_data)
+    base_columns = {
+                    'JogoNaMesa': {'name': 'JNM', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                    'Gameplay': {'name': 'GP', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                    'JogarTabuleiro': {'name': 'JT', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')}
+                }
+    
+    table_columns = [base_columns[store] for store in stores]
+    table_columns.insert(0, {'name': 'Game', 'id': 'name', 'type': 'text'})
+
+    return (table_data, table_columns)
 
 # -----------------------------------------------------------------------------------------------------
 #                                     4. GAME INFO EXPOSED ROW
@@ -895,14 +918,25 @@ def update_mechanics(game):
 
 @app.callback(
     Output(component_id='game-table', component_property='data'),
-    Input(component_id='game-filter', component_property='value')
+    Output(component_id='game-table', component_property='columns'),
+    Input(component_id='game-filter', component_property='value'),
+    Input(component_id='store-filter', component_property='value')
 )
-def update_game_table(game):
+def update_game_table(game, stores):
     
     filtered_data = diff_prices.query('name == @game')
     table_data = filtered_data.to_dict('records')
 
-    return (table_data)
+    base_columns = {
+                'JogoNaMesa': {'name': 'JNM', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                'Gameplay': {'name': 'GP', 'id': 'Gameplay_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
+                'JogarTabuleiro': {'name': 'JT', 'id': 'JogarTabuleiro_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')}
+            }
+    
+    table_columns = [base_columns[store] for store in stores]
+    table_columns.insert(0, {'name': 'Game', 'id': 'name', 'type': 'text'})
+
+    return (table_data, table_columns)
 
 # -----------------------------------------------------------------------------------------------------
 #                                   7. HISTORICAL LOW-HIGH PRICES
@@ -999,8 +1033,8 @@ def update_charts(game, stores, start_date, end_date):
                       legend={'title': 'Store', 'font': {'size': 14}},
                       title={'text': 'Price over Time', 'font': {'size': 24}, 'yref': 'paper', 'automargin': True, 'y': 0.9, 'x': 0.5, 'xanchor': 'center'}
                       )
-    
-    for store in list(stores_prop.keys()):
+
+    for store in list(stores):
         fig.append_trace({'x': filtered_data['date'],
                           'y': filtered_data[store],
                           'type': 'scatter',
