@@ -13,6 +13,7 @@ from plotly.subplots import make_subplots
 import requests
 
 import bgg_spyder
+from pages import faq
 
 
 root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
@@ -72,8 +73,7 @@ diff_prices.drop(columns=['date_previous',
                           'Gameplay_previous',
                           'Gameplay_current',
                           'JogarTabuleiro_previous',
-                          'JogarTabuleiro_current',
-                          'max_abs_diff'
+                          'JogarTabuleiro_current'
                         ],
                 inplace=True
             )
@@ -83,20 +83,31 @@ current_games = master_df[master_df['date']==most_recent_date]['name'].sort_valu
 # Set the page stylesheet and start the actual dashboard app
 external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 
-app = Dash(__name__, external_stylesheets=external_stylesheets)#, use_pages=True)
+app = Dash(__name__,
+           external_stylesheets=external_stylesheets,)
+           #use_pages=True,
+           #routing_callback_inputs={'navbar': Input('navbar', 'children')})
+
 app.title = 'The Price is Right'
 
 #############################################################################################################
 #                                               PAGE LAYOUT                                                 #
 #############################################################################################################
 
+url_bar_and_content_div = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
 app.layout = html.Div(
         children=[
+            dcc.Location(id='url', refresh=False),
             dbc.NavbarSimple(
                         children=[
-                            #dbc.NavItem(dbc.NavLink('Home', href='#')),
+                            dbc.NavItem(dbc.NavLink('Home', href='/')),
                             dbc.NavItem(dbc.NavLink('FAQ', href='/faq'))
                         ],
+                        id='navbar',
                         brand='NavbarSimple',
                         brand_href='#',
                         color='#222222',
@@ -140,7 +151,7 @@ app.layout = html.Div(
                                         {'label': game, 'value': game}
                                         for game in current_games
                                         ],
-                                value='Last Will',
+                                value='Alchemists',
                                 id='game-filter',
                                 clearable=False,
                                 searchable=True,
@@ -189,7 +200,7 @@ app.layout = html.Div(
                 html.H3('Top 10 Daily Price Drops', className='text-center'),
                 dash_table.DataTable(
                             id='data-table',
-                            data=diff_prices.head(10).to_dict('records'),
+                            data=diff_prices.query('max_abs_diff < 0').head(10).to_dict('records'),
                             columns=[
                                 {'name': 'Game', 'id': 'name', 'type': 'text'},
                                 {'name': 'JNM', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
@@ -553,10 +564,17 @@ app.layout = html.Div(
                     ], className='wrapper'
             ),
         #dash.page_container
+        html.Div(id='homepage')
     ]
 )
 
-
+@app.callback(Output('homepage', 'children'),
+          Input('url', 'pathname'))
+def display_page(pathname):
+    if pathname == '/faq':
+        return faq.layout
+    else:
+        '/'
 #############################################################################################################
 #                                               CALLBACKS                                                   #
 #############################################################################################################
@@ -620,7 +638,7 @@ def update_date_picker_range(game, mode):
 )
 def update_data_table(game, stores):
     
-    table_data = diff_prices.head(10).to_dict('records')
+    table_data = diff_prices.query('max_abs_diff < 0').head(10).to_dict('records')
 
     base_columns = {
                     'JogoNaMesa': {'name': 'JNM', 'id': 'JogoNaMesa_abs_diff', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed, sign=Sign.positive, symbol=Symbol.yes, symbol_suffix='€')},
