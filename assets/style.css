@@ -75,6 +75,12 @@ body {
   font-size: 18px
 }
 
+.page-text {
+  color: #222222;
+  padding-top: 24px;
+  text-align: center
+}
+
 .Select-control {
   height: 48px;
   width: 256px
