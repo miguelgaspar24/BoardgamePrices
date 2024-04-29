@@ -15,7 +15,7 @@ import requests
 from project import bgg_spyder
 
 
-dash.register_page(__name__, path= '/analytics')
+dash.register_page(__name__, path= '/main')
 
 root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
 
@@ -81,10 +81,10 @@ diff_prices.drop(columns=['date_previous',
 
 current_games = master_df[master_df['date']==most_recent_date]['name'].sort_values().unique()
 
+
 #############################################################################################################
 #                                               PAGE LAYOUT                                                 #
 #############################################################################################################
-
 
 layout = html.Div(
         children=[
@@ -525,8 +525,7 @@ layout = html.Div(
                                     className='card-graph'
                         )
                     ], className='wrapper'
-            ),
-        html.Div(id='homepage')
+            )
     ]
 )
 
