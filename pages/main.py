@@ -15,7 +15,7 @@ import requests
 from project import bgg_spyder
 
 
-dash.register_page(__name__, path= '/main')
+dash.register_page(__name__, name='The Price is Right', path= '/main')
 
 root_path = r'C:\Users\migue\OneDrive\Desktop\virtual_envs\board_games_web_scraping\project\data'
 

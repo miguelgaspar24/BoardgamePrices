@@ -3,7 +3,7 @@ import dash
 from dash import html
 
 
-dash.register_page(__name__, path='/faq')
+dash.register_page(__name__, name='The Price is Right', path='/faq')
 
 layout = html.Div(
                 children=[

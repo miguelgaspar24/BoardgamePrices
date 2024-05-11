@@ -78,6 +78,8 @@ body {
 .page-text {
   color: #222222;
   padding-top: 24px;
+  padding-left: 110px;
+  padding-right: 110px;
   text-align: center
 }
 
