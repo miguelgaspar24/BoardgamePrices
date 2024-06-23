@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 import os
 import sys
+import time
 
 import pandas as pd
 
@@ -22,11 +23,11 @@ def set_custom_logger(logger_level, savepath, log_filename):
 	Returns a logger object with its associated handler and formatter.
 	'''
 
-	logger = logging.getLogger('my_logger')
+	logger = logging.getLogger(log_filename.split('.')[0])
 	logger.setLevel(logger_level)
 
 	fh = logging.FileHandler(os.path.join(savepath, log_filename), mode='a')
-	fh.setLevel(logging.DEBUG)
+	#fh.setLevel(logging.DEBUG)
 
 	info_format = '%(asctime)s line%(lineno)d %(levelname)s: %(message)s'
 	formatter = logging.Formatter(
@@ -41,59 +42,109 @@ def set_custom_logger(logger_level, savepath, log_filename):
 	return logger
 
 
-def main(custom_logger, savepath):
+def main(logger, savepath):
 	'''
 	Collects the scraping results of different spyder scripts and saves their joint output to an
 	Excel file.	Takes the following arguments:
 
-	custom_logger (logger object): a logger object created by the above set_custom_logger function.
+	logger 	  	  (logger.log): a logger object created by the set_custom_logger function.
 	savepath      (str): path where we want to save our price data in.
 	'''
 
-	game_list, table1 = spyder1.get_prices()
-	table2 = spyder2.get_prices(game_list)
-	table3 = spyder3.get_prices(game_list)
+	logger.info('Prcoess Start')
+	
+	try:
+		logger.info("Spyder 1 start")
+		start_time1 = time.time()
+		game_list, table1 = spyder1.get_prices()
+		end_time1 = time.time()
+		duration1 = end_time1 - start_time1
+		if duration1 >= 60:
+			logger.info("Spyder 1 end: duration = " + str(int((end_time1 - start_time1) / 60)) + " minutes")
+		else:
+			logger.info("Spyder 1 end: duration = " + str(int(end_time1 - start_time1)) + " seconds")
+	except Exception as e:
+		logger.error("Process Interrupted:\n", e)
 
-	temp_merge1 = table1.merge(table2, on='name', how='left')
-	full_table = temp_merge1.merge(table3, on='name', how='left')
+	try:
+		logger.info("Spyder 2 start")
+		start_time2 = time.time()
+		table2 = spyder2.get_prices(game_list)
+		end_time2 = time.time()
+		duration2 = end_time2 - start_time2
+		if duration2 >= 60:
+			logger.info("Spyder 2 end: duration = " + str(int((end_time2 - start_time2) / 60)) + " minutes")
+		else:
+			logger.info("Spyder 2 end: duration = " + str(int(end_time2 - start_time2)) + " seconds")
+	except Exception as e:
+		logger.error("Process Interrupted:\n", e)
 
-	today = dt.datetime.today()
-	custom_logger.info("Today's menu, in separate main functions: " + today.strftime("%Y-%m-%d %H:%M"))
+	try:
+		logger.info("Spyder 3 start")
+		start_time3 = time.time()
+		table3 = spyder3.get_prices(game_list)
+		end_time3 = time.time()
+		duration3 = end_time3 - start_time3
+		if duration3 >= 60:
+			logger.info("Spyder 3 end: duration = " + str(int((end_time3 - start_time3) / 60)) + " minutes")
+		else:
+			logger.info("Spyder 3 end: duration = " + str(int(end_time3 - start_time3)) + " seconds")
+	except Exception as e:
+		logger.error("Process Interrupted:\n", e)
 
-	year_folder = os.path.join(savepath, today.strftime('%Y') + '_prices')
-	if not os.path.isdir(year_folder):
-		try:
-			os.mkdir(year_folder)
-			print('Folder created!')
-		except OSError:
-			print('Folder already exists!')
+	try:
+		logger.info("Tables Merge Start")
+		temp_merge1 = table1.merge(table2, on='names', how='left')
+		full_table = temp_merge1.merge(table3, on='name', how='left')
+		logger.info("Tables Merge Complete")
+	except Exception as e:
+		logger.error("Process Interrupted:\n", e)
 
-	filename = os.path.join(savepath, os.path.basename(year_folder), today.strftime('%B') + '.xlsx')
-	if not os.path.isfile(filename):
-		full_table.to_excel(
-							filename,
-							index=False,
-							sheet_name=today.strftime("%Y-%m-%d"),
-							na_rep='NaN',
-							)
-	else:
-		with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+	try:
+		logger.info("Save File Folder Creation Start")
+		today = dt.datetime.today()
+		year_folder = os.path.join(savepath, today.strftime('%Y') + '_prices')
+		if not os.path.isdir(year_folder):
+			try:
+				os.mkdir(year_folder)
+				print('Folder created!')
+			except OSError:
+				print('Folder already exists!')
+		logger.info("Save File Folder Creation Complete")
+	except Exception as e:
+		logger.error("Process Interrupted:\n", e)
+
+	try:
+		logger.info("Data Write Start")
+		filename = os.path.join(savepath, os.path.basename(year_folder), today.strftime('%B') + '.xlsx')
+		if not os.path.isfile(filename):
 			full_table.to_excel(
-								writer,
+								filename,
 								index=False,
 								sheet_name=today.strftime("%Y-%m-%d"),
 								na_rep='NaN',
 								)
+		else:
+			with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+				full_table.to_excel(
+									writer,
+									index=False,
+									sheet_name=today.strftime("%Y-%m-%d"),
+									na_rep='NaN',
+									)
+		logger.info("Data Write Complete")
+	except Exception as e:
+		logger.error("Process Interrupted:\n", e)
 
 
 if __name__ == '__main__':
 
 	savepath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), 'data')
 
-	custom_logger = set_custom_logger(
-									  logger_level=logging.DEBUG,
-									  savepath=os.path.join(os.path.dirname(savepath), 'logs'),
-									  log_filename='jogonamesa.log',
-									 )
+	process_logger = set_custom_logger(
+									   logger_level=logging.DEBUG,
+									   savepath=os.path.join(os.path.dirname(savepath), 'logs'),
+									   log_filename='process.log',
+									)
 
-	main(custom_logger, savepath)
+	main(process_logger, savepath)
