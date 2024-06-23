@@ -132,3 +132,160 @@
 2024/05/08 07:27:04 line61 INFO: Today's menu, in separate main functions: 2024-05-08 07:27
 2024/05/10 20:01:49 line61 INFO: Today's menu, in separate main functions: 2024-05-10 20:01
 2024/05/11 07:32:07 line61 INFO: Today's menu, in separate main functions: 2024-05-11 07:32
+2024/05/12 07:25:32 line61 INFO: Today's menu, in separate main functions: 2024-05-12 07:25
+2024/05/13 07:09:41 line54 INFO: Scraping initiated
+2024/05/13 07:09:41 line56 INFO: Spyder 1 start
+2024/05/13 07:09:50 line60 INFO: Spyder 1 end: duration = 9.518237829208374
+2024/05/13 07:09:50 line62 INFO: Spyder 2 start
+2024/05/13 07:28:44 line66 INFO: Spyder 2 end: duration = 1133.9504747390747
+2024/05/13 07:28:44 line68 INFO: Spyder 3 start
+2024/05/13 07:33:30 line72 INFO: Spyder 3 end: duration = 285.3876690864563
+2024/05/14 07:02:07 line54 INFO: Scraping initiated
+2024/05/14 07:02:07 line56 INFO: Spyder 1 start
+2024/05/14 07:02:13 line60 INFO: Spyder 1 end: duration = 6.138676404953003
+2024/05/14 07:02:13 line62 INFO: Spyder 2 start
+2024/05/14 07:20:26 line66 INFO: Spyder 2 end: duration = 1093.0887989997864
+2024/05/14 07:20:26 line68 INFO: Spyder 3 start
+2024/05/14 07:24:59 line72 INFO: Spyder 3 end: duration = 272.7426211833954
+2024/05/15 21:17:22 line54 INFO: Scraping initiated
+2024/05/15 21:17:22 line56 INFO: Spyder 1 start
+2024/05/15 21:17:28 line60 INFO: Spyder 1 end: duration = 5.999509334564209
+2024/05/15 21:17:28 line62 INFO: Spyder 2 start
+2024/05/15 21:34:40 line66 INFO: Spyder 2 end: duration = 1031.8659002780914
+2024/05/15 21:34:40 line68 INFO: Spyder 3 start
+2024/05/15 21:38:23 line72 INFO: Spyder 3 end: duration = 223.5292673110962
+2024/05/16 19:30:01 line54 INFO: Scraping initiated
+2024/05/16 19:30:01 line56 INFO: Spyder 1 start
+2024/05/16 19:30:13 line60 INFO: Spyder 1 end: duration = 11.65955901145935
+2024/05/16 19:30:13 line62 INFO: Spyder 2 start
+2024/05/16 19:55:42 line66 INFO: Spyder 2 end: duration = 1528.9290499687195
+2024/05/16 19:55:42 line68 INFO: Spyder 3 start
+2024/05/16 19:59:31 line72 INFO: Spyder 3 end: duration = 229.07242035865784
+2024/05/17 07:11:02 line54 INFO: Scraping initiated
+2024/05/17 07:11:02 line56 INFO: Spyder 1 start
+2024/05/18 07:00:09 line54 INFO: Scraping initiated
+2024/05/18 07:00:09 line56 INFO: Spyder 1 start
+2024/05/18 07:00:14 line60 INFO: Spyder 1 end: duration = 5.169968128204346
+2024/05/18 07:00:14 line62 INFO: Spyder 2 start
+2024/05/18 07:19:25 line66 INFO: Spyder 2 end: duration = 1151.2562472820282
+2024/05/18 07:19:25 line68 INFO: Spyder 3 start
+2024/05/18 07:24:14 line72 INFO: Spyder 3 end: duration = 288.85935974121094
+2024/05/19 07:00:16 line54 INFO: Scraping initiated
+2024/05/19 07:00:16 line56 INFO: Spyder 1 start
+2024/05/19 07:00:21 line60 INFO: Spyder 1 end: duration = 5.247950077056885
+2024/05/19 07:00:21 line62 INFO: Spyder 2 start
+2024/05/19 07:18:30 line66 INFO: Spyder 2 end: duration = 1088.4391434192657
+2024/05/19 07:18:30 line68 INFO: Spyder 3 start
+2024/05/19 07:23:28 line72 INFO: Spyder 3 end: duration = 297.82884764671326
+2024/05/20 07:00:11 line54 INFO: Scraping initiated
+2024/05/20 07:00:11 line56 INFO: Spyder 1 start
+2024/05/20 07:00:16 line60 INFO: Spyder 1 end: duration = 5.031321287155151
+2024/05/20 07:00:16 line62 INFO: Spyder 2 start
+2024/05/20 07:20:12 line66 INFO: Spyder 2 end: duration = 1196.4338941574097
+2024/05/20 07:20:12 line68 INFO: Spyder 3 start
+2024/05/20 07:24:43 line72 INFO: Spyder 3 end: duration = 271.0601305961609
+2024/05/21 07:00:16 line54 INFO: Scraping initiated
+2024/05/21 07:00:16 line56 INFO: Spyder 1 start
+2024/05/21 07:00:23 line60 INFO: Spyder 1 end: duration = 6.047998666763306
+2024/05/21 07:00:23 line62 INFO: Spyder 2 start
+2024/05/21 07:19:46 line66 INFO: Spyder 2 end: duration = 1163.828953742981
+2024/05/21 07:19:46 line68 INFO: Spyder 3 start
+2024/05/21 07:24:33 line72 INFO: Spyder 3 end: duration = 286.344233751297
+2024/05/22 07:01:04 line54 INFO: Scraping initiated
+2024/05/22 07:01:04 line56 INFO: Spyder 1 start
+2024/05/22 07:01:10 line60 INFO: Spyder 1 end: duration = 5.300527334213257
+2024/05/22 07:01:10 line62 INFO: Spyder 2 start
+2024/05/22 07:19:54 line66 INFO: Spyder 2 end: duration = 1124.3788969516754
+2024/05/22 07:19:54 line68 INFO: Spyder 3 start
+2024/05/22 07:24:49 line72 INFO: Spyder 3 end: duration = 294.9385435581207
+2024/05/23 07:01:33 line54 INFO: Scraping initiated
+2024/05/23 07:01:33 line56 INFO: Spyder 1 start
+2024/05/23 07:01:38 line60 INFO: Spyder 1 end: duration = 4.776581048965454
+2024/05/23 07:01:38 line62 INFO: Spyder 2 start
+2024/05/23 07:20:47 line66 INFO: Spyder 2 end: duration = 1148.8766510486603
+2024/05/23 07:20:47 line68 INFO: Spyder 3 start
+2024/05/23 07:25:05 line72 INFO: Spyder 3 end: duration = 257.83049988746643
+2024/05/24 07:03:06 line54 INFO: Scraping initiated
+2024/05/24 07:03:06 line56 INFO: Spyder 1 start
+2024/05/24 07:03:11 line60 INFO: Spyder 1 end: duration = 4.98380184173584
+2024/05/24 07:03:11 line62 INFO: Spyder 2 start
+2024/05/24 07:21:13 line66 INFO: Spyder 2 end: duration = 1082.1428983211517
+2024/05/24 07:21:13 line68 INFO: Spyder 3 start
+2024/05/24 07:26:01 line72 INFO: Spyder 3 end: duration = 288.59270572662354
+2024/05/25 07:02:24 line54 INFO: Scraping initiated
+2024/05/25 07:02:24 line56 INFO: Spyder 1 start
+2024/05/25 07:02:29 line60 INFO: Spyder 1 end: duration = 5.12609076499939
+2024/05/25 07:02:29 line62 INFO: Spyder 2 start
+2024/05/25 07:20:06 line66 INFO: Spyder 2 end: duration = 1056.0770592689514
+2024/05/25 07:20:06 line68 INFO: Spyder 3 start
+2024/05/25 07:24:46 line72 INFO: Spyder 3 end: duration = 280.8576080799103
+2024/05/26 07:02:04 line54 INFO: Scraping initiated
+2024/05/26 07:02:04 line56 INFO: Spyder 1 start
+2024/05/26 07:02:09 line60 INFO: Spyder 1 end: duration = 4.8659327030181885
+2024/05/26 07:02:09 line62 INFO: Spyder 2 start
+2024/05/26 07:20:38 line66 INFO: Spyder 2 end: duration = 1108.7371084690094
+2024/05/26 07:20:38 line68 INFO: Spyder 3 start
+2024/05/26 07:26:00 line72 INFO: Spyder 3 end: duration = 322.1526999473572
+2024/05/26 16:26:41 line54 INFO: Scraping initiated
+2024/05/26 16:26:41 line56 INFO: Spyder 1 start
+2024/05/26 16:26:45 line60 INFO: Spyder 1 end: duration = 4.007451772689819
+2024/05/26 16:26:45 line62 INFO: Spyder 2 start
+2024/05/26 16:44:21 line66 INFO: Spyder 2 end: duration = 1055.8410840034485
+2024/05/26 16:44:21 line68 INFO: Spyder 3 start
+2024/05/26 19:36:07 line54 INFO: Scraping initiated
+2024/05/26 19:36:07 line56 INFO: Spyder 1 start
+2024/05/26 19:36:13 line60 INFO: Spyder 1 end: duration = 5.574926137924194
+2024/05/26 19:36:13 line62 INFO: Spyder 2 start
+2024/05/26 19:55:08 line66 INFO: Spyder 2 end: duration = 1135.3456366062164
+2024/05/26 19:55:08 line68 INFO: Spyder 3 start
+2024/05/26 20:00:31 line72 INFO: Spyder 3 end: duration = 322.54348587989807
+2024/05/29 23:01:45 line54 INFO: Scraping initiated
+2024/05/29 23:01:45 line56 INFO: Spyder 1 start
+2024/05/29 23:02:00 line60 INFO: Spyder 1 end: duration = 15.193436861038208
+2024/05/29 23:02:00 line62 INFO: Spyder 2 start
+2024/05/29 23:35:05 line66 INFO: Spyder 2 end: duration = 1984.757161617279
+2024/05/29 23:35:05 line68 INFO: Spyder 3 start
+2024/05/29 23:40:05 line72 INFO: Spyder 3 end: duration = 300.63921570777893
+2024/05/30 20:21:51 line56 INFO: Spyder 1 start
+2024/05/30 20:21:58 line60 INFO: Spyder 1 end: duration = 6.697835922241211
+2024/05/30 20:21:58 line62 INFO: Spyder 2 start
+2024/05/30 20:43:32 line66 INFO: Spyder 2 end: duration = 1293.8606326580048
+2024/05/30 20:43:32 line68 INFO: Spyder 3 start
+2024/05/30 20:48:55 line72 INFO: Spyder 3 end: duration = 322.9098160266876
+2024/06/03 21:26:42 line56 INFO: Spyder 1 start
+2024/06/03 21:26:47 line64 INFO: Spyder 1 end: duration = 4 seconds
+2024/06/03 21:26:47 line66 INFO: Spyder 2 start
+2024/06/03 21:34:48 line56 INFO: Spyder 1 start
+2024/06/03 21:34:51 line64 INFO: Spyder 1 end: duration = 3 seconds
+2024/06/03 21:34:51 line66 INFO: Spyder 2 start
+2024/06/03 21:55:50 line73 INFO: Spyder 2 end: duration = 1259 seconds
+2024/06/03 21:55:50 line75 INFO: Spyder 3 start
+2024/06/03 21:59:43 line56 INFO: Spyder 1 start
+2024/06/03 21:59:46 line64 INFO: Spyder 1 end: duration = 3 seconds
+2024/06/03 21:59:46 line66 INFO: Spyder 2 start
+2024/06/03 22:22:10 line72 INFO: Spyder 2 end: duration = 22 minutes
+2024/06/03 22:22:10 line76 INFO: Spyder 3 start
+2024/06/03 22:26:47 line82 INFO: Spyder 3 end: duration = 4 minutes
+2024/06/03 22:39:06 line56 INFO: Spyder 1 start
+2024/06/03 22:39:09 line64 INFO: Spyder 1 end: duration = 3 seconds
+2024/06/05 07:09:56 line56 INFO: Spyder 1 start
+2024/06/14 19:48:35 line56 INFO: Spyder 1 start
+2024/06/14 19:48:44 line64 INFO: Spyder 1 end: duration = 9 seconds
+2024/06/15 21:16:57 line56 INFO: Spyder 1 start
+2024/06/15 21:17:09 line64 INFO: Spyder 1 end: duration = 11 seconds
+2024/06/16 07:02:23 line56 INFO: Spyder 1 start
+2024/06/16 07:02:29 line64 INFO: Spyder 1 end: duration = 5 seconds
+2024/06/17 07:00:24 line56 INFO: Spyder 1 start
+2024/06/17 07:00:29 line64 INFO: Spyder 1 end: duration = 5 seconds
+2024/06/18 07:00:12 line56 INFO: Spyder 1 start
+2024/06/18 07:00:18 line64 INFO: Spyder 1 end: duration = 5 seconds
+2024/06/19 07:00:15 line56 INFO: Spyder 1 start
+2024/06/19 07:00:20 line64 INFO: Spyder 1 end: duration = 5 seconds
+2024/06/20 07:00:15 line56 INFO: Spyder 1 start
+2024/06/20 07:00:20 line64 INFO: Spyder 1 end: duration = 5 seconds
+2024/06/21 07:02:27 line56 INFO: Spyder 1 start
+2024/06/21 07:02:32 line64 INFO: Spyder 1 end: duration = 5 seconds
+2024/06/22 07:02:28 line56 INFO: Spyder 1 start
+2024/06/22 07:02:33 line64 INFO: Spyder 1 end: duration = 4 seconds
+2024/06/23 07:00:14 line56 INFO: Spyder 1 start
+2024/06/23 07:00:19 line64 INFO: Spyder 1 end: duration = 5 seconds
