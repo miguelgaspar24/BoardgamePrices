@@ -7,7 +7,7 @@ import requests
 
 from alive_progress import alive_it
 
-from credentials import get_credentials
+from project.credentials import get_credentials
 
 
 def get_prices():
