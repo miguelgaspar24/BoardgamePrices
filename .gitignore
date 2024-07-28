@@ -23,3 +23,7 @@ pages/__pycache__/about.cpython-310.pyc
 pages/__pycache__/main.cpython-310.pyc
 tests/__pycache__/test_main.cpython-310-pytest-8.2.2.pyc
 tests/__pycache__/test_main_routine.cpython-310-pytest-8.2.2.pyc
+spyders/__pycache__/bgg_spyder.cpython-310.pyc
+spyders/__pycache__/gameplay_spyder.cpython-310.pyc
+spyders/__pycache__/jogartabuleiro_spyder.cpython-310.pyc
+spyders/__pycache__/jogonamesa_spyder.cpython-310.pyc
