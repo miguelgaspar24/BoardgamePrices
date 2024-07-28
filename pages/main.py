@@ -12,7 +12,7 @@ from PIL import Image
 from plotly.subplots import make_subplots
 import requests
 
-from project import bgg_spyder
+from project.spyders import bgg_spyder
 
 
 dash.register_page(__name__, name='The Price is Right', path= '/main')

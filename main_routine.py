@@ -7,9 +7,9 @@ import time
 
 import pandas as pd
 
-import jogonamesa_spyder as spyder1
-import gameplay_spyder as spyder2
-import jogartabuleiro_spyder as spyder3
+from spyders import jogonamesa_spyder as spyder1
+from spyders import gameplay_spyder as spyder2
+from spyders import jogartabuleiro_spyder as spyder3
 
 
 def set_custom_logger(logger_level, savepath, log_filename):
@@ -51,7 +51,7 @@ def main(logger, savepath):
 	savepath      (str): path where we want to save our price data in.
 	'''
 
-	logger.info('Prcoess Start')
+	logger.info('Process Start')
 	
 	try:
 		logger.info("Spyder 1 start")
@@ -94,7 +94,7 @@ def main(logger, savepath):
 
 	try:
 		logger.info("Tables Merge Start")
-		temp_merge1 = table1.merge(table2, on='names', how='left')
+		temp_merge1 = table1.merge(table2, on='name', how='left')
 		full_table = temp_merge1.merge(table3, on='name', how='left')
 		logger.info("Tables Merge Complete")
 	except Exception as e:
@@ -135,6 +135,8 @@ def main(logger, savepath):
 		logger.info("Data Write Complete")
 	except Exception as e:
 		logger.error("Process Interrupted:\n", e)
+	
+	logger.info("Process Complete")
 
 
 if __name__ == '__main__':
@@ -144,7 +146,7 @@ if __name__ == '__main__':
 	process_logger = set_custom_logger(
 									   logger_level=logging.DEBUG,
 									   savepath=os.path.join(os.path.dirname(savepath), 'logs'),
-									   log_filename='process.log',
+									   log_filename='main_routine.log',
 									)
 
 	main(process_logger, savepath)
